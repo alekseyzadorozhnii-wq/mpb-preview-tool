@@ -108,6 +108,9 @@
   .row-title { font-size:14px; font-weight:400; color:#191919; line-height:20px; }
   .row-label { font-size:12px; color:#8F8F8F; line-height:16px; }
   .row-chev { color:#C4C9D4; font-size:18px; flex:0 0 auto; }
+  .row-ico { width:22px; height:22px; object-fit:contain; }
+  .row-icon span { font-size:20px; }
+  .banner-ico { width:16px; height:16px; object-fit:contain; }
 
   /* ---------- Каталог (несколько продуктов) ---------- */
   .c-card { background:#fff; border-radius:20px; padding:20px; margin-top:16px; }
@@ -225,6 +228,31 @@ var ICONS = {
 };
 function iconId(url){ var s = String(url||'').split('/').pop()||''; return s.replace(/\.(png|svg)$/i,'').toLowerCase(); }
 function iconFor(url){ return ICONS[iconId(url)] || '•'; }
+function iconImg(url, fb, cls){
+  return '<img class="' + cls + '" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-src="' + url + '" data-fb="' + fb + '" alt="">';
+}
+function iconInner(c){
+  if (c.icon) return iconImg(c.icon, iconFor(c.icon), 'row-ico');
+  return '<span>•</span>';
+}
+function wireImages(){
+  document.querySelectorAll('img[data-src]').forEach(function (img) {
+    if (!img.getAttribute('data-src')) return;
+    var probe = new Image();
+    probe.onload = function () { img.src = img.dataset.src; img.removeAttribute('data-src'); };
+    probe.onerror = function () {
+      var fb = img.getAttribute('data-fb');
+      if (fb !== null) {
+        var sp = document.createElement('span');
+        sp.textContent = fb;
+        if (img.parentNode) img.parentNode.replaceChild(sp, img);
+      } else {
+        img.removeAttribute('data-src');
+      }
+    };
+    probe.src = img.dataset.src;
+  });
+}
 
 /* ---------- Разбор структуры ---------- */
 function looksLikeProduct(o){
@@ -333,9 +361,8 @@ function heroHtml(p, idx){
 function rowsHtml(conditions){
   var out = '';
   (conditions || []).forEach(function (c) {
-    var ic = c.icon ? iconFor(c.icon) : '•';
     out += '<div class="row">' +
-      '<div class="row-icon">' + ic + '</div>' +
+      '<div class="row-icon">' + iconInner(c) + '</div>' +
       '<div class="row-txt">' +
         '<span class="row-title">' + esc(c.text) + '</span>' +
         (c.add ? '<span class="row-label">' + esc(c.add) + '</span>' : '') +
@@ -350,7 +377,8 @@ function bannersHtml(banners){
   var out = '<div class="banners" data-banners="1">';
   banners.forEach(function (b) {
     var cls = b.color === 'DEFAULT' ? 'default' : 'warning';
-    out += '<div class="banner ' + cls + '"><span class="banner-icon">' + (b.icon ? iconFor(b.icon) : '•') + '</span>' + esc(b.text) + '</div>';
+    var bIcon = b.icon ? iconImg(b.icon, iconFor(b.icon), 'banner-ico') : '<span>•</span>';
+    out += '<div class="banner ' + cls + '"><span class="banner-icon">' + bIcon + '</span>' + esc(b.text) + '</div>';
   });
   return out + '</div>';
 }
@@ -416,13 +444,7 @@ function render(products, pageName){
     });
   });
 
-  document.querySelectorAll('img[data-src]').forEach(function (img) {
-    if (!img.getAttribute('data-src')) return;
-    var probe = new Image();
-    probe.onload = function () { img.src = img.dataset.src; img.removeAttribute('data-src'); };
-    probe.onerror = function () { img.removeAttribute('data-src'); };
-    probe.src = img.dataset.src;
-  });
+  wireImages();
 }
 
 /* ---------- Универсальная авто-вёрстка (для любых структур) ---------- */
@@ -489,13 +511,7 @@ function renderSections(sections, pageName){
 
   cardsHost.innerHTML = html;
   document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
-  document.querySelectorAll('img[data-src]').forEach(function (img) {
-    if (!img.getAttribute('data-src')) return;
-    var probe = new Image();
-    probe.onload = function () { img.src = img.dataset.src; img.removeAttribute('data-src'); };
-    probe.onerror = function () { img.removeAttribute('data-src'); };
-    probe.src = img.dataset.src;
-  });
+  wireImages();
 }
 
 /* ---------- Форматирование JSON в столбик ---------- */
