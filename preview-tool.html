@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Превью product_info — конструктор</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Geist', 'Geist Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #0e141b;
+    color: #dfe7ee;
+    min-height: 100vh;
+  }
+  .app { display: flex; min-height: 100vh; }
+  .panel {
+    width: 46%; min-width: 360px; max-width: 720px;
+    padding: 18px; border-right: 1px solid #223042;
+    display: flex; flex-direction: column; gap: 10px;
+  }
+  .panel .h { font-size: 15px; color: #aeb9c6; display: flex; justify-content: space-between; align-items: center; }
+  .chk { font-size: 12px; color: #8fa0b3; display: flex; align-items: center; gap: 6px; cursor: pointer; min-height: 16px; }
+  .chk input { accent-color: #596CED; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn {
+    font-size: 13px; font-weight: 600; padding: 8px 13px; border-radius: 10px; cursor: pointer;
+    border: 1px solid #33455c; background: #1a2432; color: #dfe7ee;
+  }
+  .btn:hover { background: #22324a; }
+  .btn.primary { background: linear-gradient(135deg,#596CED,#6f7dff); border: none; color: #fff; }
+  textarea {
+    flex: 1; min-height: 300px;
+    background: #121c28; color: #e8f0f7; border: 1px solid #2b3b51; border-radius: 12px;
+    font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; line-height: 1.5;
+    padding: 12px; resize: vertical; white-space: pre; overflow: auto;
+  }
+  textarea:focus { outline: none; border-color: #596CED; }
+  .status { font-size: 12px; min-height: 18px; color: #8fa0b3; }
+  .status.ok { color: #56d98c; }
+  .status.bad { color: #ff6b6b; }
+  .status.note { color: #d7a35c; }
+
+  .preview { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; }
+  .desk-note { color: #8b97a5; font-size: 13px; text-align: center; margin-bottom: 14px; }
+  .phone {
+    width: 402px; max-width: 100%;
+    background: #F1F3F9;
+    border-radius: 42px; border: 10px solid #000;
+    box-shadow: 0 30px 80px rgba(0,0,0,.6);
+    display: flex; flex-direction: column; overflow: hidden;
+    position: relative; color: #191919;
+  }
+  .phone.tall { height: 874px; max-height: 92vh; }
+
+  .statusbar { background:#fff; padding: 10px 24px 4px; display:flex; justify-content:space-between; align-items:flex-end; font-size:14px; font-weight:500; flex:0 0 auto; }
+  #time { font-variant-numeric: tabular-nums; }
+  .appbar { background:#fff; padding: 0 12px; display:flex; align-items:center; gap:4px; border-bottom:1px solid #eef1f6; flex:0 0 auto; height:64px; }
+  .back { width:40px; height:40px; border-radius:100px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#191919; cursor:pointer; }
+  .abar-t { font-size:18px; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#191919; }
+  .abar-r { width:40px; height:40px; border-radius:100px; display:flex; align-items:center; justify-content:center; color:#191919; font-size:17px; }
+
+  .scroll { flex:1 1 auto; overflow-y:auto; padding:0 16px 16px; scrollbar-width:none; }
+  .scroll::-webkit-scrollbar { display:none; }
+  .empty { text-align:center; color:#9aa4b0; font-size:14px; padding:40px 10px; line-height:1.6; }
+  .js-ok { background:#eaf7ee; border:1px solid #bfe6cc; color:#1c7a3d; font-size:11px; border-radius:10px; padding:6px 10px; margin:12px 0; display:none; }
+  .js-err { background:#fdecec; border:1px solid #f5bdbd; color:#b3261e; font-size:11px; border-radius:10px; padding:8px 10px; margin:12px 0; display:none; white-space:pre-wrap; }
+
+  /* ---------- Детальный экран (как в Figma) ---------- */
+  .hero {
+    position:relative; width:100%; height:216px; margin-top:16px;
+    background: linear-gradient(225deg, #E2E1F5 3.31%, #CBCFF6 29.29%, #BBC8F7 56.29%, #B8CCFE 81.05%, #B7CCF6 100%);
+    border-radius:16px; overflow:hidden; flex:0 0 auto;
+  }
+  .hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+  .hero-icon-only { display:flex; align-items:center; justify-content:center; }
+  .hero-icon {
+    width:160px; height:160px; border-radius:9999px;
+    background: linear-gradient(89.82deg, #DEE2FB 0.68%, #DEE2FB 52.45%, #BDC4F8 101.32%);
+    display:flex; align-items:center; justify-content:center; font-size:72px;
+  }
+  .d-title { font-size:22px; font-weight:600; color:#191919; line-height:28px; margin:16px 0; }
+  .d-card {
+    background:#FFFFFF; border-radius:20px; padding:10px 20px;
+  }
+  .d-link { display:block; padding:12px 0 4px; font-size:14px; font-weight:600; color:#596CED; text-decoration:none; }
+  .d-link.plain { color:#8F8F8F; }
+
+  /* ---------- Универсальные секции (авто-вёрстка) ---------- */
+  .sec-title { font-size:15px; font-weight:600; color:#191919; margin:18px 0 10px; }
+  .g-row { display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid #F1F3F9; text-decoration:none; color:#191919; }
+  .g-row:last-child { border-bottom:none; }
+  .g-ico { width:32px; height:32px; border-radius:10px; background:#EEF0FB; display:flex; align-items:center; justify-content:center; font-size:16px; flex:0 0 auto; }
+  .g-dot { width:10px; height:10px; border-radius:50%; border:2px solid #596CED; flex:0 0 auto; }
+  .g-name { font-size:14px; font-weight:500; flex:1; min-width:0; }
+  .g-key { font-size:12px; color:#8F8F8F; flex:1; text-transform:capitalize; }
+  .g-text { font-size:12.5px; color:#8F8F8F; margin-top:3px; line-height:1.45; }
+  .g-note { padding:13px 0; border-bottom:1px solid #F1F3F9; }
+  .g-note:last-child { border-bottom:none; }
+
+  /* ---------- Строки (conditions) ---------- */
+  .row { display:flex; align-items:center; gap:12px; padding:12px 0; }
+  .row + .row { border-top:1px solid #F1F3F9; }
+  .row-icon {
+    width:40px; height:40px; border-radius:9999px; background:#F1F3F9;
+    display:flex; align-items:center; justify-content:center; font-size:20px; flex:0 0 auto;
+  }
+  .row-txt { flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+  .row-title { font-size:14px; font-weight:400; color:#191919; line-height:20px; }
+  .row-label { font-size:12px; color:#8F8F8F; line-height:16px; }
+  .row-chev { color:#C4C9D4; font-size:18px; flex:0 0 auto; }
+
+  /* ---------- Каталог (несколько продуктов) ---------- */
+  .c-card { background:#fff; border-radius:20px; padding:20px; margin-top:16px; }
+  .c-head { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+  .c-img { width:64px; height:64px; border-radius:16px; flex:0 0 auto; object-fit:cover; border:1px solid #EFF2F8; }
+  .c-img-fallback { color:#596CED; font-size:28px; background:#F1F3F9; display:flex;align-items:center;justify-content:center; }
+  .c-cat { font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:#8F8F8F; font-weight:600; }
+  .c-title { font-size:18px; font-weight:600; color:#191919; margin-top:2px; }
+  .c-sub { font-size:12px; color:#8F8F8F; word-break:break-all; }
+
+  /* ---------- Плашки ограничений ---------- */
+  .banners { display:flex; flex-direction:column; gap:8px; margin:14px 0; }
+  .banner { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; font-size:13px; font-weight:600; }
+  .banner-icon { font-size:15px; flex:0 0 auto; }
+  .banner.default { background:#FDEBEA; color:#D34037; }
+  .banner.warning { background:#FFF3DF; color:#AD6A00; }
+
+  /* ---------- Кнопки ---------- */
+  .pill {
+    display:block; width:100%; height:48px; border:none; cursor:pointer;
+    background:#596CED; color:#fff; font-size:16px; font-weight:600; line-height:20px;
+    padding:12px 20px; border-radius:36px;
+  }
+  .pill:hover { background:#4D5FE0; }
+
+  /* ---------- Низ экрана ---------- */
+  .bottom { flex:0 0 auto; padding:0 16px 0; background:linear-gradient(180deg, rgba(241,243,249,0) 0%, #F1F3F9 25%); padding-top:14px; }
+  .indicator { width:144px; height:5px; background:#000; border-radius:100px; margin:8px auto 8px; }
+
+  /* ---------- Bottom sheet ---------- */
+  .sheet-overlay { position:absolute; inset:0; background:rgba(10,14,20,.5); opacity:0; pointer-events:none; transition:.25s; z-index:20; }
+  .sheet-overlay.show { opacity:1; pointer-events:auto; }
+  .sheet { position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:10px 20px 26px; max-height:70%; overflow-y:auto; transform:translateY(100%); transition:.28s; z-index:30; }
+  .sheet.show { transform:translateY(0); }
+  .sheet-grab { width:42px; height:4px; border-radius:3px; background:#D9DEE6; margin:0 auto 10px; }
+  .sheet-close { float:right; border:none; background:#F1F3F9; border-radius:50%; width:30px; height:30px; font-size:14px; cursor:pointer; }
+  .sheet .tag { font-size:11px; font-weight:700; color:#596CED; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
+  .sheet .s-title { font-size:17px; font-weight:700; margin-bottom:8px; clear:both; color:#191919; }
+  .sheet .s-body { font-size:13.5px; color:#4A5563; line-height:1.55; }
+  .sheet .s-body ul { padding-left:18px; margin:6px 0; }
+  .sheet .s-body li { margin:4px 0; }
+  .sheet .s-body .sep { color:#B1BAC6; margin:12px 0; font-weight:700; display:block; }
+  .sheet .s-link { margin-top:16px; font-size:13.5px; color:#596CED; }
+
+  @media (max-width: 940px) {
+    .app { flex-direction: column; }
+    .panel { width:100%; max-width:none; min-width:0; border-right:none; border-bottom:1px solid #223042; }
+    textarea { min-height:200px; }
+    .preview { padding:20px 12px; }
+    .phone.tall { height:auto; max-height:none; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="panel">
+    <div class="h">Конфигурация <span class="status" id="status">вставьте JSON</span></div>
+    <textarea id="cfg" spellcheck="false" placeholder='Вставьте сюда конфигурацию (JSON) — полный ответ API или вырезку.&#10;Формат автоматически разложится в столбик.&#10;Или перетащите файл .json'></textarea>
+    <div class="row">
+      <button class="btn primary" id="applyBtn">Применить</button>
+      <button class="btn" id="sampleBtn">Пример</button>
+      <button class="btn" id="fileBtn">Загрузить .json</button>
+      <button class="btn" id="clearBtn">Очистить</button>
+      <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
+      <label class="chk"><input type="checkbox" id="autoFmt" checked> авто-формат в столбик</label>
+      <label class="chk"><input type="checkbox" id="bannerToggle"> плашки ограничений</label>
+    </div>
+    <div class="row"><span class="status note" id="hint">Авто-рендер включён: превью обновляется при вставке</span></div>
+  </div>
+
+  <div class="preview">
+    <div style="width:100%; max-width:422px;">
+      <div class="desk-note">Превью экрана «Продукты» (product_info) · стиль по Figma «Эквайринг»</div>
+      <div class="phone tall" id="phone">
+        <div class="statusbar"><span id="time">9:41</span><span>📶 ⚡ 🔋</span></div>
+        <div class="appbar">
+          <span class="back">‹</span>
+          <span class="abar-t" id="navTitle"></span>
+          <span class="abar-r">🔍</span>
+        </div>
+        <div class="scroll" id="scroll">
+          <div class="js-ok" id="jsOk">✓ Скрипт выполнен успешно</div>
+          <div class="js-err" id="jsErr"></div>
+          <div class="empty" id="empty">🖼<br><br>Слева вставьте конфигурацию —<br>здесь появится экран</div>
+          <div id="cards"></div>
+        </div>
+        <div class="bottom" id="bottom">
+          <button class="pill" id="ctaBtn" style="display:none"></button>
+          <div class="indicator"></div>
+        </div>
+        <div class="sheet-overlay" id="overlay"></div>
+        <div class="sheet" id="sheet">
+          <div class="sheet-grab"></div>
+          <button class="sheet-close" id="sheetClose">✕</button>
+          <div id="sheetContent"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+window.addEventListener('error', function (e) {
+  var msg = (e && e.message) ? e.message : 'unknown';
+  var el = document.getElementById('jsErr');
+  if (el) { el.style.display = 'block'; el.textContent = 'Ошибка скрипта: ' + msg; }
+});
+
+var ICONS = {
+  percent:'💹', phone:'📲', cash:'💵', check:'✅', star:'⭐', alarm_plus:'⏰',
+  cost:'💸', 'bar-chart-10':'📊', handbag:'👔', discussion:'💬', cards:'💳',
+  safe:'🔐', window_plus:'🪟', free:'🆓', banner_lock_red:'🔒', banner_warning_orange:'⚠️'
+};
+function iconId(url){ var s = String(url||'').split('/').pop()||''; return s.replace(/\.(png|svg)$/i,'').toLowerCase(); }
+function iconFor(url){ return ICONS[iconId(url)] || '•'; }
+
+/* ---------- Разбор структуры ---------- */
+function looksLikeProduct(o){
+  return o && typeof o === 'object' && !Array.isArray(o) && typeof o.header === 'string';
+}
+function findPage(obj, depth){
+  if (!obj || typeof obj !== 'object' || depth > 12) return null;
+  if (Array.isArray(obj)) {
+    for (var i=0;i<obj.length;i++){ var r=findPage(obj[i], depth+1); if(r) return r; }
+    return null;
+  }
+  var keys = Object.keys(obj);
+  if (keys.length === 0) return null;
+  var dc = 0;
+  for (var k=0;k<keys.length;k++){
+    var v = obj[keys[k]];
+    if (v && typeof v === 'object' && Array.isArray(v.directory)) dc++;
+  }
+  if (dc > 0 && dc === keys.length) return obj;
+  for (var kk=0;kk<keys.length;kk++){
+    var r2 = findPage(obj[keys[kk]], depth+1);
+    if (r2) return r2;
+  }
+  return null;
+}
+function parseLink(lb){
+  if (!lb) return null;
+  var text = (typeof lb === 'string') ? lb : (lb.text || '');
+  var href = null, label = text;
+  var m = /<a\s+href="([^"]*)"[^>]*>([\s\S]*?)<\/a>/.exec(text);
+  if (m) { href = m[1]; label = m[2]; }
+  var bs = (lb && lb.data && lb.data['bottom-sheet']) || (lb && lb['bottom-sheet']) || null;
+  var isSheet = href === 'bottom-sheet' || !!bs;
+  return { href: isSheet ? null : href, label: label, sheet: isSheet ? bs : null };
+}
+function parseProduct(d, cat){
+  var link = parseLink(d.link_button);
+  var conditions = [];
+  (d.conditions || d.facts || d.features || []).forEach(function(c){
+    conditions.push({
+      icon: c.icon_android || c.icon_ios || c.icon || '',
+      text: c.text || '',
+      add: c.additional_text || c.additionalText || c.subtitle || ''
+    });
+  });
+  var banners = [];
+  (d.banners || []).forEach(function(b){
+    var col = String(b.color || '').toUpperCase();
+    banners.push({ color: col, icon: b.icon_android || b.icon_ios || b.icon || '', text: b.text || '' });
+  });
+  return {
+    name: d.name || '',
+    cat: cat || d.category || '',
+    header: d.header || d.title || 'Без названия',
+    image: d.product_image || d.image || '',
+    action: d.action_button || d.actionText || 'Продолжить',
+    link: link,
+    banners: banners,
+    conditions: conditions
+  };
+}
+function extractSections(rootJson){
+  var out = { products: [], sections: [], pageName: '' };
+  if (!rootJson) return out;
+  if (rootJson.name) out.pageName = rootJson.name;
+  else if (rootJson.data && rootJson.data.name) out.pageName = rootJson.data.name;
+  var page = findPage(rootJson, 0);
+  if (page) {
+    Object.keys(page).forEach(function(key){
+      var group = page[key];
+      if (!group || !Array.isArray(group.directory)) return;
+      var cat = group.name || key;
+      var items = [];
+      group.directory.forEach(function(item){
+        if (!item) return;
+        var d = item.data || item;
+        if (looksLikeProduct(d)) out.products.push(parseProduct(d, cat));
+        else items.push(d);
+      });
+      if (items.length) out.sections.push({ key: key, name: group.name || key, items: items });
+    });
+  }
+  if (out.products.length === 0 && looksLikeProduct(rootJson)) out.products.push(parseProduct(rootJson, ''));
+  return out;
+}
+
+/* ---------- Вспомогательные ---------- */
+function esc(t){ return String(t || ''); }
+function svgTile(idx, letter){
+  var pairs = ['#ffeef7,#ffd9cf','#eef2ff,#dce4ff','#fff3e6,#ffe1b8','#eaf7ee,#c8ecd4','#f3f0ff,#e0d8ff'][idx % 5];
+  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128">' +
+    '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+    '<stop offset="0" stop-color="#f6f8fb"/><stop offset="1" stop-color="#e6ebf2"/></linearGradient></defs>' +
+    '<rect width="128" height="128" rx="18" fill="url(#g)"/>' +
+    '<rect width="128" height="128" rx="18" fill="#596CED" opacity="0.10"/>' +
+    '<text x="64" y="82" font-size="52" font-family="Arial" font-weight="600" text-anchor="middle" fill="#596CED">' + letter + '</text></svg>');
+}
+function heroHtml(p, idx){
+  var letter = (p.header || '?').charAt(0);
+  if (p.image) {
+    return '<div class="hero"><img class="hero-img" alt="" src="' + svgTile(idx, letter) + '" data-src="' + p.image + '"></div>';
+  }
+  return '<div class="hero hero-icon-only"><div class="hero-icon">' + letter + '</div></div>';
+}
+function rowsHtml(conditions){
+  var out = '';
+  (conditions || []).forEach(function (c) {
+    var ic = c.icon ? iconFor(c.icon) : '•';
+    out += '<div class="row">' +
+      '<div class="row-icon">' + ic + '</div>' +
+      '<div class="row-txt">' +
+        '<span class="row-title">' + esc(c.text) + '</span>' +
+        (c.add ? '<span class="row-label">' + esc(c.add) + '</span>' : '') +
+      '</div>' +
+      '<span class="row-chev">›</span>' +
+    '</div>';
+  });
+  return out;
+}
+function bannersHtml(banners){
+  if (!banners || !banners.length) return '';
+  var out = '<div class="banners" data-banners="1">';
+  banners.forEach(function (b) {
+    var cls = b.color === 'DEFAULT' ? 'default' : 'warning';
+    out += '<div class="banner ' + cls + '"><span class="banner-icon">' + (b.icon ? iconFor(b.icon) : '•') + '</span>' + esc(b.text) + '</div>';
+  });
+  return out + '</div>';
+}
+
+/* ---------- Рендер ---------- */
+var scroll = document.getElementById('scroll');
+var empty = document.getElementById('empty');
+var cardsHost = document.getElementById('cards');
+var bannerToggleOn = false;
+var phone = document.getElementById('phone');
+var bottom = document.getElementById('bottom');
+var ctaBtn = document.getElementById('ctaBtn');
+
+function linkHtml(p, idx){
+  if (!p.link) return '';
+  if (p.link.sheet) return '<a class="d-link" href="#" data-sheet="' + idx + '">' + esc(p.link.label) + '</a>';
+  if (p.link.href) return '<a class="d-link" href="' + p.link.href + '" target="_blank">' + esc(p.link.label) + '</a>';
+  if (p.link.label) return '<span class="d-link plain">' + esc(p.link.label) + '</span>';
+  return '';
+}
+
+function render(products, pageName){
+  cardsHost.innerHTML = '';
+  empty.style.display = products.length ? 'none' : 'block';
+  document.getElementById('navTitle').textContent = pageName || '';
+
+  var single = products.length === 1;
+  bottom.style.display = single ? '' : 'none';
+  phone.classList.add(single ? 'mode-detail' : 'mode-catalog');
+
+  products.forEach(function (p, idx) {
+    var card = document.createElement('div');
+
+    if (single) {
+      /* экран продукта как в Figma: hero → заголовок → info-карточка → ссылка */
+      card.innerHTML =
+        heroHtml(p, idx) +
+        '<div class="d-title">' + esc(p.header) + '</div>' +
+        bannersHtml(p.banners) +
+        '<div class="d-card">' + rowsHtml(p.conditions) + '</div>' +
+        linkHtml(p, idx);
+      ctaBtn.textContent = p.action;
+    } else {
+      /* каталог: карточки в дизайн-системе */
+      card.innerHTML = productCardHtml(p, idx);
+    }
+
+    cardsHost.appendChild(card);
+  });
+
+  document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
+
+  document.querySelectorAll('a[data-sheet]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      e.preventDefault();
+      var p = products[parseInt(a.getAttribute('data-sheet'), 10)];
+      if (!p || !p.link || !p.link.sheet) return;
+      var html = '<div class="tag">Акция</div><div class="s-body">' + (p.link.sheet.text || '') + '</div>';
+      if (p.link.sheet.link_button) html += '<div class="s-link">' + p.link.sheet.link_button + '</div>';
+      document.getElementById('sheetContent').innerHTML = html;
+      document.getElementById('sheet').classList.add('show');
+      document.getElementById('overlay').classList.add('show');
+    });
+  });
+
+  document.querySelectorAll('img[data-src]').forEach(function (img) {
+    if (!img.getAttribute('data-src')) return;
+    var probe = new Image();
+    probe.onload = function () { img.src = img.dataset.src; img.removeAttribute('data-src'); };
+    probe.onerror = function () { img.removeAttribute('data-src'); };
+    probe.src = img.dataset.src;
+  });
+}
+
+/* ---------- Универсальная авто-вёрстка (для любых структур) ---------- */
+function productCardHtml(p, idx){
+  var letter = (p.header || '?').charAt(0);
+  var thumb = '<div class="c-img">' + letter + '</div>';
+  if (p.image) thumb = '<img class="c-img" alt="" src="' + svgTile(idx % 5, letter) + '" data-src="' + p.image + '">';
+  return '<div class="c-card">' +
+    '<div class="c-head">' + thumb +
+      '<div>' +
+        (p.cat && p.cat !== p.header ? '<div class="c-cat">' + esc(p.cat) + '</div>' : '') +
+        '<div class="c-title">' + esc(p.header) + '</div>' +
+        (p.name ? '<div class="c-sub">' + esc(p.name) + '</div>' : '') +
+      '</div>' +
+    '</div>' +
+    rowsHtml(p.conditions) +
+    bannersHtml(p.banners) +
+    '<button class="pill" style="margin-top:14px">' + esc(p.action) + '</button>' +
+    linkHtml(p, idx) +
+  '</div>';
+}
+
+function classifyItem(d){
+  if (looksLikeProduct(d)) return 'product';
+  var hasName = typeof d.name === 'string' && d.name;
+  var hasText = typeof d.text === 'string' && d.text;
+  var hasLink = typeof d.link === 'string' && d.link;
+  if (hasName && hasLink) return 'link';
+  if (hasName && hasText) return 'note';
+  if (hasName) return 'choice';
+  return 'kv';
+}
+
+function renderSections(sections, pageName){
+  cardsHost.innerHTML = '';
+  empty.style.display = 'none';
+  bottom.style.display = 'none';
+  document.getElementById('navTitle').textContent = pageName || 'Содержимое';
+
+  var html = '';
+  sections.forEach(function(group){
+    var rows = '';
+    group.items.forEach(function(d){
+      var t = classifyItem(d);
+      if (t === 'link') {
+        rows += '<a class="g-row" href="' + esc(d.link) + '" target="_blank"><span class="g-ico">🔗</span><span class="g-name">' + esc(d.name) + '</span><span class="row-chev">›</span></a>';
+      } else if (t === 'note') {
+        rows += '<div class="g-note"><div class="g-name">' + esc(d.name) + '</div><div class="g-text">' + esc(d.text) + '</div></div>';
+      } else if (t === 'choice') {
+        rows += '<div class="g-row"><span class="g-dot"></span><span class="g-name">' + esc(d.name) + '</span></div>';
+      } else if (t === 'kv') {
+        Object.keys(d).forEach(function(k){
+          if (k === 'id') return;
+          var v = d[k];
+          if (v === null || v === undefined || typeof v === 'object') return;
+          rows += '<div class="g-row"><span class="g-key">' + esc(k) + '</span><span class="g-name" style="text-align:right">' + esc(v) + '</span></div>';
+        });
+      } else {
+        rows += '<div class="g-note"><div class="g-name">' + esc(d.name || d.header || '') + '</div></div>';
+      }
+    });
+    html += '<div class="sec-title">' + esc(group.name || group.key) + '</div><div class="d-card">' + rows + '</div>';
+  });
+
+  cardsHost.innerHTML = html;
+  document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
+  document.querySelectorAll('img[data-src]').forEach(function (img) {
+    if (!img.getAttribute('data-src')) return;
+    var probe = new Image();
+    probe.onload = function () { img.src = img.dataset.src; img.removeAttribute('data-src'); };
+    probe.onerror = function () { img.removeAttribute('data-src'); };
+    probe.src = img.dataset.src;
+  });
+}
+
+/* ---------- Форматирование JSON в столбик ---------- */
+function tryPretty(text){
+  var t = (text || '').trim();
+  if (!t) return text;
+  try { var o = JSON.parse(t); return JSON.stringify(o, null, 2); }
+  catch (e) { return text; }
+}
+function setPrettyPreserving(text){
+  cfg.value = tryPretty(cfg.value);
+}
+
+/* ---------- Применение конфигурации ---------- */
+function report(msg, cls){ var s = document.getElementById('status'); s.className = 'status ' + (cls || ''); s.textContent = msg; }
+
+function applyConfig(text){
+  var trimmed = (text || '').trim();
+  if (!trimmed) { render([], ''); report('вставьте JSON', ''); return; }
+  var obj = null;
+  try { obj = JSON.parse(trimmed); }
+  catch (err) { render([], ''); report('⚠ JSON не валиден: ' + err.message, 'bad'); return; }
+  var data = obj.data || obj;
+  var res = extractSections(data);
+  if (res.products.length) {
+    var n = res.products.length;
+    report('Найдено продуктов: ' + n + (n === 1 ? ' · режим «экрана продукта»' : ' · режим «каталога»') + (res.pageName ? ' · имя: ' + res.pageName : ''), 'ok');
+    render(res.products, res.pageName);
+  } else if (res.sections.length) {
+    report('Секций: ' + res.sections.length + ' · автоматическая вёрстка' + (res.pageName ? ' · имя: ' + res.pageName : ''), 'ok');
+    renderSections(res.sections, res.pageName);
+  } else {
+    render([], res.pageName);
+    report('⚠ Структура не распознана (нет продуктов или секций с directory)', 'bad');
+  }
+}
+
+var cfg = document.getElementById('cfg');
+var autoFmt = document.getElementById('autoFmt');
+var debounce = null;
+cfg.addEventListener('input', function () {
+  clearTimeout(debounce);
+  debounce = setTimeout(function () {
+    if (autoFmt.checked && cfg.value.indexOf('\n') === -1) {
+      var pr = tryPretty(cfg.value);
+      if (pr !== cfg.value) { cfg.value = pr; }
+    }
+    applyConfig(cfg.value);
+  }, 400);
+});
+document.getElementById('applyBtn').addEventListener('click', function () {
+  setPrettyPreserving();
+  applyConfig(cfg.value);
+});
+document.getElementById('clearBtn').addEventListener('click', function () { cfg.value = ''; applyConfig(''); });
+
+var fileInput = document.getElementById('fileInput');
+document.getElementById('fileBtn').addEventListener('click', function () { fileInput.click(); });
+fileInput.addEventListener('change', function () {
+  var f = fileInput.files && fileInput.files[0];
+  if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function () {
+    cfg.value = tryPretty(reader.result);
+    applyConfig(cfg.value);
+    report('Файл загружен: ' + f.name, 'ok');
+  };
+  reader.readAsText(f, 'utf-8');
+  fileInput.value = '';
+});
+['dragover','drop'].forEach(function (ev) { cfg.addEventListener(ev, function (e) { e.preventDefault(); }); });
+cfg.addEventListener('drop', function (e) {
+  var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+  if (!f) return;
+  var reader = new FileReader();
+  reader.onload = function () {
+    cfg.value = tryPretty(reader.result);
+    applyConfig(cfg.value);
+    report('Файл загружен: ' + f.name, 'ok');
+  };
+  reader.readAsText(f, 'utf-8');
+});
+
+var bannerToggle = document.getElementById('bannerToggle');
+bannerToggle.addEventListener('change', function () {
+  bannerToggleOn = bannerToggle.checked;
+  document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
+});
+
+document.getElementById('overlay').addEventListener('click', closeSheet);
+document.getElementById('sheetClose').addEventListener('click', closeSheet);
+function closeSheet(){ document.getElementById('sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
+
+ctaBtn.addEventListener('click', function () { /* CTA — заглушка */ });
+
+document.getElementById('time').textContent = new Date().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
+document.getElementById('jsOk').style.display = 'block';
+
+/* ---------- Пример (реальный API-конфиг) ---------- */
+function toApiJson(products){
+  var page = { state:'OK', code:'20000', data: { id:'019eaae6-0a3e-9aba-49eb-7204883bf89d', name:'product_info', data:{} } };
+  var inner = page.data.data;
+  products.forEach(function(p){
+    var d = {
+      action_button: p.action,
+      conditions: p.conditions.map(function(c){
+        var o = { text:c.text, icon_android:'https://storage.sovcombank.ru/mpb/product_info/icons_android/'+c.icon+'.svg', icon_ios:'https://storage.sovcombank.ru/mpb/product_info/icons_ios/'+c.icon+'.png' };
+        if (c.add) o.additional_text = c.add;
+        return o;
+      }),
+      header: p.header,
+      link_button: null,
+      product_image: p.image,
+      banners: p.banners.map(function(b){ return { color:b.color, id:b.id, text:b.text, icon_android:'https://storage.sovcombank.ru/mpb/product_info/icons_android/'+b.icon+'.svg', icon_ios:'https://storage.sovcombank.ru/mpb/product_info/icons_ios/'+b.icon+'.png' }; })
+    };
+    if (p.link.sheet) {
+      d.link_button = { text:'<a href="bottom-sheet">'+p.link.label+'</a>', data:{ 'bottom-sheet': { link_button: p.link.sheet.link_button, text: p.link.sheet.text } } };
+    } else {
+      d.link_button = { text:'<a href="'+p.link.url+'">'+p.link.label+'</a>', data:null };
+    }
+    inner[p.name] = { directory:[ { data:d, name:p.name } ], name:p.cat };
+  });
+  return JSON.stringify(page, null, 2);
+}
+
+var SAMPLE = [
+  {
+    name:'merchant_acquiring', cat:'Торговый эквайринг', header:'Торговый эквайринг', action:'Оформить',
+    image:'https://storage.sovcombank.ru/mpb/product_info/main_images/merchant_acquiring.png',
+    link:{
+      url:null, label:'Подробнее об условиях',
+      sheet:{
+        text:'<h1>Акция «Торговый эквайринг по 0,5%»</h1><p>Принимайте платежи на льготном тарифе в течение 3 месяцев, а потом переходите на наши тарифы для любого бизнеса</p><span class="sep">Условия:</span><ul><li>Иметь открытый счёт (без действующего эквайринга) или открыть новый на тарифах «Комфорт», «Успех», «Премиум» или «ПРО продажи»</li><li>Подключить торговый эквайринг</li></ul><span class="sep">Срок действия:</span><br>С 22 июня 2026 по 30 сентября 2026',
+        link_button:'<a href="https://sovcombank.ru/business/ekvairing/msb-torgovii-ekvairing-msb">Подробнее о торговом эквайринге</a>'
+      }
+    },
+    banners:[ { color:'DEFAULT', id:'DBO_BLOCK', icon:'banner_lock_red', text:'Ограничение прав доступа' } ],
+    conditions:[
+      { icon:'percent', text:'Ставка от 0%*', add:'*по акции «Торговый эквайринг по 0,5%»' },
+      { icon:'handbag', text:'Для всех отраслей бизнеса' },
+      { icon:'discussion', text:'Поддержка 24/7' },
+      { icon:'cards', text:'Платежи картами и по QR' }
+    ]
+  },
+  {
+    name:'auto_replenishment_form', cat:'Автонакопилка', header:'Автонакопилка', action:'Оформить',
+    image:'https://storage.sovcombank.ru/mpb/product_info/main_images/auto_replenishment_form.png',
+    link:{ url:'https://sovcombank.ru/business/preview/depoziti-msb/avtonakopilka', label:'Подробнее об условиях' },
+    banners:[
+      { color:'DEFAULT', id:'DBO_BLOCK', icon:'banner_lock_red', text:'Ограничение прав доступа' },
+      { color:'WARNING', id:'NON_RESIDENT', icon:'banner_warning_orange', text:'Оформление доступно только резидентам' }
+    ],
+    conditions:[
+      { icon:'percent', text:'Ежемесячный доход', add:'начисление процентов на среднемесячный остаток' },
+      { icon:'alarm_plus', text:'Автопополнение со счёта', add:'размер перевода выбираете вы' },
+      { icon:'cost', text:'Не нужно платить', add:'открывается бесплатно и бессрочно' }
+    ]
+  }
+];
+
+document.getElementById('sampleBtn').addEventListener('click', function () {
+  cfg.value = toApiJson([SAMPLE[0]]);
+  applyConfig(cfg.value);
+  report('Пример: экран «Эквайринг» (как в Figma). Вставьте свой конфиг — увидите каталог', 'ok');
+});
+</script>
+</body>
+</html>
