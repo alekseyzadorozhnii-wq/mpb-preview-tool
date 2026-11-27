@@ -269,39 +269,77 @@ function wireImages(){
 }
 
 /* ---------- Привязка к JSON (пути ↔ строки) ---------- */
+/* Выводим СТАНДАРТНЫЙ валидный JSON (как JSON.stringify(x,null,2)),
+   параллельно запоминая, на какой строке лежит значение каждого пути.
+   Никаких "0:", "1:" — текст можно копировать и вставлять как есть. */
 function stringifyWithMap(root){
   var lines = [], map = {};
-  function R(n){ var r=''; for (var i=0;i<n;i++) r+='  '; return r; }
   function push(s){ lines.push(s); return lines.length; }
-  function isObject(v){ return v && typeof v === 'object' && !Array.isArray(v); }
-  function isContainer(v){ return v && typeof v === 'object'; }
-  function walk(node, path, depth){
-    // node is container (object or array) — печатаем тело + закрытие
-    var keys;
-    if (Array.isArray(node)) keys = node.map(function(v,i){ return i; });
-    else keys = Object.keys(node);
-    var has = keys.length > 0;
-    // пустые контейнеры: "{}" или "[]" одной строкой (уже открыты родителем)
-    if (!has) { push('}'); return; }
-    keys.forEach(function(k, i){
+  function ind(n){ var r=''; for (var i=0;i<n;i++) r+='  '; return r; }
+  function isObj(v){ return v && typeof v === 'object' && !Array.isArray(v); }
+  function writeObj(node, path, d){
+    var keys = Object.keys(node);
+    var last = keys.length - 1;
+    keys.forEach(function (k, i){
       var val = node[k];
       var p = path.concat(k);
-      var comma = (i < keys.length - 1) ? ',' : '';
-      var ktext = (typeof k === 'number') ? String(k) : '"' + k + '"';
-      if (isContainer(val)){
-        push(R(depth+1) + ktext + ': ' + (Array.isArray(val) ? '[' : '{'));
-        walk(val, p, depth+1);
-        if (Array.isArray(val) && (!val.length)) { /* уже закрыт */ }
-        else { push(R(depth+1) + (Array.isArray(val) ? ']' : '}') + comma); }
+      var comma = (i < last) ? ',' : '';
+      if (Array.isArray(val)) {
+        if (val.length) {
+          push(ind(d) + '"' + k + '": [');
+          writeArr(val, p, d + 1);
+          push(ind(d) + ']' + comma);
+        } else {
+          push(ind(d) + '"' + k + '": []' + comma);
+        }
+      } else if (isObj(val)) {
+        if (Object.keys(val).length) {
+          push(ind(d) + '"' + k + '": {');
+          writeObj(val, p, d + 1);
+          push(ind(d) + '}' + comma);
+        } else {
+          push(ind(d) + '"' + k + '": {}' + comma);
+        }
       } else {
-        push(R(depth+1) + ktext + ': ' + JSON.stringify(val) + comma);
-        map[p.join('.')] = lines.length;
+        var line = push(ind(d) + '"' + k + '": ' + JSON.stringify(val) + comma);
+        map[p.join('.')] = line;
+      }
+    });
+  }
+  function writeArr(node, path, d){
+    var last = node.length - 1;
+    node.forEach(function (val, i){
+      var p = path.concat(i);
+      var comma = (i < last) ? ',' : '';
+      if (Array.isArray(val)) {
+        if (val.length) {
+          var l0 = push(ind(d) + '[');
+          map[p.join('.')] = l0;
+          writeArr(val, p, d + 1);
+          push(ind(d) + ']' + comma);
+        } else {
+          push(ind(d) + '[]' + comma);
+          map[p.join('.')] = lines.length;
+        }
+      } else if (isObj(val)) {
+        if (Object.keys(val).length) {
+          var l1 = push(ind(d) + '{');
+          map[p.join('.')] = l1;
+          writeObj(val, p, d + 1);
+          push(ind(d) + '}' + comma);
+        } else {
+          push(ind(d) + '{}' + comma);
+          map[p.join('.')] = lines.length;
+        }
+      } else {
+        var l2 = push(ind(d) + JSON.stringify(val) + comma);
+        map[p.join('.')] = l2;
       }
     });
   }
   // корень
-  if (Array.isArray(root)) { push('['); walk(root, [], 0); push(']'); }
-  else if (root && typeof root === 'object') { push('{'); walk(root, [], 0); push('}'); }
+  if (Array.isArray(root)) { push('['); writeArr(root, [], 1); push(']'); }
+  else if (root && typeof root === 'object') { push('{'); writeObj(root, [], 1); push('}'); }
   else { push(JSON.stringify(root)); }
   return { text: lines.join('\n'), map: map };
 }
