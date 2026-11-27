@@ -5,186 +5,202 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Превью product_info — конструктор</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Geist', 'Geist Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-    background: #0e141b;
-    color: #dfe7ee;
-    min-height: 100vh;
-  }
-  .app { display: flex; min-height: 100vh; }
-  .panel {
-    width: 46%; min-width: 360px; max-width: 720px;
-    padding: 18px; border-right: 1px solid #223042;
-    display: flex; flex-direction: column; gap: 10px;
-  }
-  .panel .h { font-size: 15px; color: #aeb9c6; display: flex; justify-content: space-between; align-items: center; }
-  .chk { font-size: 12px; color: #8fa0b3; display: flex; align-items: center; gap: 6px; cursor: pointer; min-height: 16px; }
-  .chk input { accent-color: #596CED; }
-  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-  .btn {
-    font-size: 13px; font-weight: 600; padding: 8px 13px; border-radius: 10px; cursor: pointer;
-    border: 1px solid #33455c; background: #1a2432; color: #dfe7ee;
-  }
-  .btn:hover { background: #22324a; }
-  .btn.primary { background: linear-gradient(135deg,#596CED,#6f7dff); border: none; color: #fff; }
-  textarea {
-    flex: 1; min-height: 300px;
-    background: #121c28; color: #e8f0f7; border: 1px solid #2b3b51; border-radius: 12px;
-    font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; line-height: 1.5;
-    padding: 12px; resize: vertical; white-space: pre; overflow: auto;
-  }
-  textarea:focus { outline: none; border-color: #596CED; }
-  .status { font-size: 12px; min-height: 18px; color: #8fa0b3; }
-  .status.ok { color: #56d98c; }
-  .status.bad { color: #ff6b6b; }
-  .status.note { color: #d7a35c; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'Geist', 'Geist Variable', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: #0e141b;
+  color: #dfe7ee;
+  min-height: 100vh;
+}
+.app { display: flex; min-height: 100vh; height: 100vh; }
+.panel {
+  width: 50%; min-width: 420px; max-width: 1200px;
+  padding: 18px; border-right: 1px solid #223042;
+  display: flex; flex-direction: column; gap: 10px;
+  overflow: hidden;
+}
+.panel .h { font-size: 15px; color: #aeb9c6; display: flex; justify-content: space-between; align-items: center; }
+.chk { font-size: 12px; color: #8fa0b3; display: flex; align-items: center; gap: 6px; cursor: pointer; min-height: 16px; }
+.chk input { accent-color: #596CED; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.btn {
+  font-size: 13px; font-weight: 600; padding: 8px 13px; border-radius: 10px; cursor: pointer;
+  border: 1px solid #33455c; background: #1a2432; color: #dfe7ee;
+}
+.btn:hover { background: #22324a; }
+.btn.primary { background: linear-gradient(135deg,#596CED,#6f7dff); border: none; color: #fff; }
+.cfg-wrap {
+  position: relative; flex: 1; min-height: 0;
+  background: #121c28; border: 1px solid #2b3b51; border-radius: 12px;
+  overflow: hidden; display: flex;
+}
+.cfg-wrap textarea {
+  flex: 1; min-height: 0;
+  color: #e8f0f7;
+  font-family: "Cascadia Code", Consolas, monospace; font-size: 12px; line-height: 1.5;
+  padding: 12px; resize: vertical; white-space: pre; overflow: auto;
+  position: relative; z-index: 2; background: transparent; border: none; outline: none;
+}
+.cfg-line-hl {
+  position: absolute; left: 0; right: 0; z-index: 1;
+  background: rgba(89,108,237,.32);
+  border-left: 3px solid #6f7dff;
+  box-shadow: inset 0 0 0 1px rgba(89,108,237,.18);
+  pointer-events: none; display: none;
+}
+.cfg-wrap textarea:focus { outline: none; border-color: #596CED; }
+.cfg-wrap textarea::selection { background: rgba(89,108,237,.50); color: #fff; }
+.status { font-size: 12px; min-height: 18px; color: #8fa0b3; }
+.status.ok { color: #56d98c; }
+.status.bad { color: #ff6b6b; }
+.status.note { color: #d7a35c; }
+.preview { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; overflow: hidden; }
+.phone {
+  width: 402px; max-width: 100%;
+  background: #F1F3F9;
+  border-radius: 42px; border: 10px solid #000;
+  box-shadow: 0 30px 80px rgba(0,0,0,.6);
+  display: flex; flex-direction: column; overflow: hidden;
+  position: relative; color: #191919;
+}
+.phone.tall { height: 874px; max-height: 92vh; }
+.statusbar { background:#fff; padding: 10px 24px 4px; display:flex; justify-content:space-between; align-items:flex-end; font-size:14px; font-weight:500; flex:0 0 auto; }
+#time { font-variant-numeric: tabular-nums; }
+.appbar { background:#fff; padding: 0 12px; display:flex; align-items:center; gap:4px; border-bottom:1px solid #eef1f6; flex:0 0 auto; height:64px; }
+.back { width:40px; height:40px; border-radius:100px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#191919; cursor:pointer; }
+.abar-t { font-size:18px; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#191919; }
+.abar-r { width:40px; height:40px; border-radius:100px; display:flex; align-items:center; justify-content:center; color:#191919; font-size:17px; }
+.scroll { flex:1 1 auto; overflow-y:auto; padding:0 16px 16px; scrollbar-width:none; }
+.scroll::-webkit-scrollbar { display:none; }
+.empty { text-align:center; color:#9aa4b0; font-size:14px; padding:40px 10px; line-height:1.6; }
+.js-err { background:#fdecec; border:1px solid #f5bdbd; color:#b3261e; font-size:11px; border-radius:10px; padding:8px 10px; margin:12px 0; display:none; white-space:pre-wrap; }
 
-  .preview { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 24px 16px; }
-  .desk-note { color: #8b97a5; font-size: 13px; text-align: center; margin-bottom: 14px; }
-  .phone {
-    width: 402px; max-width: 100%;
-    background: #F1F3F9;
-    border-radius: 42px; border: 10px solid #000;
-    box-shadow: 0 30px 80px rgba(0,0,0,.6);
-    display: flex; flex-direction: column; overflow: hidden;
-    position: relative; color: #191919;
-  }
-  .phone.tall { height: 874px; max-height: 92vh; }
+/* ---------- Детальный экран (как в Figma) ---------- */
+.hero {
+  position:relative; width:100%; height:216px; margin-top:16px;
+  background: linear-gradient(225deg, #E2E1F5 3.31%, #CBCFF6 29.29%, #BBC8F7 56.29%, #B8CCFE 81.05%, #B7CCF6 100%);
+  border-radius:16px; overflow:hidden; flex:0 0 auto;
+}
+.hero-img { width:100%; height:100%; object-fit:cover; display:block; }
+.hero-icon-only { display:flex; align-items:center; justify-content:center; }
+.hero-icon {
+  width:160px; height:160px; border-radius:9999px;
+  background: linear-gradient(89.82deg, #DEE2FB 0.68%, #DEE2FB 52.45%, #BDC4F8 101.32%);
+  display:flex; align-items:center; justify-content:center; font-size:72px;
+}
+.d-title { font-size:22px; font-weight:600; color:#191919; line-height:28px; margin:16px 0; }
+.d-card { background:#FFFFFF; border-radius:20px; padding:10px 20px; }
+.d-link { display:block; padding:12px 0 4px; font-size:14px; font-weight:600; color:#596CED; text-decoration:none; }
+.d-link.plain { color:#8F8F8F; }
 
-  .statusbar { background:#fff; padding: 10px 24px 4px; display:flex; justify-content:space-between; align-items:flex-end; font-size:14px; font-weight:500; flex:0 0 auto; }
-  #time { font-variant-numeric: tabular-nums; }
-  .appbar { background:#fff; padding: 0 12px; display:flex; align-items:center; gap:4px; border-bottom:1px solid #eef1f6; flex:0 0 auto; height:64px; }
-  .back { width:40px; height:40px; border-radius:100px; display:flex; align-items:center; justify-content:center; font-size:24px; color:#191919; cursor:pointer; }
-  .abar-t { font-size:18px; font-weight:600; flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#191919; }
-  .abar-r { width:40px; height:40px; border-radius:100px; display:flex; align-items:center; justify-content:center; color:#191919; font-size:17px; }
+/* ---------- Универсальные секции (авто-вёрстка) ---------- */
+.sec-title { font-size:15px; font-weight:600; color:#191919; margin:18px 0 10px; }
+.g-row { display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid #F1F3F9; text-decoration:none; color:#191919; }
+.g-row:last-child { border-bottom:none; }
+.g-ico { width:32px; height:32px; border-radius:10px; background:#EEF0FB; display:flex; align-items:center; justify-content:center; font-size:16px; flex:0 0 auto; }
+.g-dot { width:10px; height:10px; border-radius:50%; border:2px solid #596CED; flex:0 0 auto; }
+.g-name { font-size:14px; font-weight:500; flex:1; min-width:0; }
+.g-key { font-size:12px; color:#8F8F8F; flex:1; text-transform:capitalize; }
+.g-text { font-size:12.5px; color:#8F8F8F; margin-top:3px; line-height:1.45; }
+.g-note { padding:13px 0; border-bottom:1px solid #F1F3F9; }
+.g-note:last-child { border-bottom:none; }
 
-  .scroll { flex:1 1 auto; overflow-y:auto; padding:0 16px 16px; scrollbar-width:none; }
-  .scroll::-webkit-scrollbar { display:none; }
-  .empty { text-align:center; color:#9aa4b0; font-size:14px; padding:40px 10px; line-height:1.6; }
-  .js-ok { background:#eaf7ee; border:1px solid #bfe6cc; color:#1c7a3d; font-size:11px; border-radius:10px; padding:6px 10px; margin:12px 0; display:none; }
-  .js-err { background:#fdecec; border:1px solid #f5bdbd; color:#b3261e; font-size:11px; border-radius:10px; padding:8px 10px; margin:12px 0; display:none; white-space:pre-wrap; }
+/* ---------- Строки (conditions) ---------- */
+.row { display:flex; align-items:center; gap:12px; padding:12px 0; }
+.row + .row { border-top:1px solid #F1F3F9; }
+.row-icon {
+  width:40px; height:40px; border-radius:9999px; background:#F1F3F9;
+  display:flex; align-items:center; justify-content:center; font-size:20px; flex:0 0 auto;
+}
+.row-txt { flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
+.row-title { font-size:14px; font-weight:400; color:#191919; line-height:20px; }
+.row-label { font-size:12px; color:#8F8F8F; line-height:16px; }
+.row-chev { color:#C4C9D4; font-size:18px; flex:0 0 auto; }
+.row-ico { width:22px; height:22px; object-fit:contain; }
+.row-icon span { font-size:20px; }
+.banner-ico { width:16px; height:16px; object-fit:contain; }
 
-  /* ---------- Детальный экран (как в Figma) ---------- */
-  .hero {
-    position:relative; width:100%; height:216px; margin-top:16px;
-    background: linear-gradient(225deg, #E2E1F5 3.31%, #CBCFF6 29.29%, #BBC8F7 56.29%, #B8CCFE 81.05%, #B7CCF6 100%);
-    border-radius:16px; overflow:hidden; flex:0 0 auto;
-  }
-  .hero-img { width:100%; height:100%; object-fit:cover; display:block; }
-  .hero-icon-only { display:flex; align-items:center; justify-content:center; }
-  .hero-icon {
-    width:160px; height:160px; border-radius:9999px;
-    background: linear-gradient(89.82deg, #DEE2FB 0.68%, #DEE2FB 52.45%, #BDC4F8 101.32%);
-    display:flex; align-items:center; justify-content:center; font-size:72px;
-  }
-  .d-title { font-size:22px; font-weight:600; color:#191919; line-height:28px; margin:16px 0; }
-  .d-card {
-    background:#FFFFFF; border-radius:20px; padding:10px 20px;
-  }
-  .d-link { display:block; padding:12px 0 4px; font-size:14px; font-weight:600; color:#596CED; text-decoration:none; }
-  .d-link.plain { color:#8F8F8F; }
+/* ---------- Каталог (несколько продуктов) ---------- */
+.c-card { background:#fff; border-radius:20px; padding:20px; margin-top:16px; }
+.c-head { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
+.c-img { width:64px; height:64px; border-radius:16px; flex:0 0 auto; object-fit:cover; border:1px solid #EFF2F8; }
+.c-img-fallback { color:#596CED; font-size:28px; background:#F1F3F9; display:flex;align-items:center;justify-content:center; }
+.c-cat { font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:#8F8F8F; font-weight:600; }
+.c-title { font-size:18px; font-weight:600; color:#191919; margin-top:2px; }
+.c-sub { font-size:12px; color:#8F8F8F; word-break:break-all; }
 
-  /* ---------- Универсальные секции (авто-вёрстка) ---------- */
-  .sec-title { font-size:15px; font-weight:600; color:#191919; margin:18px 0 10px; }
-  .g-row { display:flex; align-items:center; gap:12px; padding:13px 0; border-bottom:1px solid #F1F3F9; text-decoration:none; color:#191919; }
-  .g-row:last-child { border-bottom:none; }
-  .g-ico { width:32px; height:32px; border-radius:10px; background:#EEF0FB; display:flex; align-items:center; justify-content:center; font-size:16px; flex:0 0 auto; }
-  .g-dot { width:10px; height:10px; border-radius:50%; border:2px solid #596CED; flex:0 0 auto; }
-  .g-name { font-size:14px; font-weight:500; flex:1; min-width:0; }
-  .g-key { font-size:12px; color:#8F8F8F; flex:1; text-transform:capitalize; }
-  .g-text { font-size:12.5px; color:#8F8F8F; margin-top:3px; line-height:1.45; }
-  .g-note { padding:13px 0; border-bottom:1px solid #F1F3F9; }
-  .g-note:last-child { border-bottom:none; }
+/* ---------- Плашки ограничений ---------- */
+.banners { display:flex; flex-direction:column; gap:8px; margin:14px 0; }
+.banner { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; font-size:13px; font-weight:600; }
+.banner-icon { font-size:15px; flex:0 0 auto; }
+.banner.default { background:#FDEBEA; color:#D34037; }
+.banner.warning { background:#FFF3DF; color:#AD6A00; }
 
-  /* ---------- Строки (conditions) ---------- */
-  .row { display:flex; align-items:center; gap:12px; padding:12px 0; }
-  .row + .row { border-top:1px solid #F1F3F9; }
-  .row-icon {
-    width:40px; height:40px; border-radius:9999px; background:#F1F3F9;
-    display:flex; align-items:center; justify-content:center; font-size:20px; flex:0 0 auto;
-  }
-  .row-txt { flex:1; display:flex; flex-direction:column; gap:2px; min-width:0; }
-  .row-title { font-size:14px; font-weight:400; color:#191919; line-height:20px; }
-  .row-label { font-size:12px; color:#8F8F8F; line-height:16px; }
-  .row-chev { color:#C4C9D4; font-size:18px; flex:0 0 auto; }
-  .row-ico { width:22px; height:22px; object-fit:contain; }
-  .row-icon span { font-size:20px; }
-  .banner-ico { width:16px; height:16px; object-fit:contain; }
+/* ---------- Кнопки ---------- */
+.pill {
+  display:block; width:100%; height:48px; border:none; cursor:pointer;
+  background:#596CED; color:#fff; font-size:16px; font-weight:600; line-height:20px;
+  padding:12px 20px; border-radius:36px;
+}
+.pill:hover { background:#4D5FE0; }
 
-  /* ---------- Каталог (несколько продуктов) ---------- */
-  .c-card { background:#fff; border-radius:20px; padding:20px; margin-top:16px; }
-  .c-head { display:flex; gap:12px; align-items:center; margin-bottom:8px; }
-  .c-img { width:64px; height:64px; border-radius:16px; flex:0 0 auto; object-fit:cover; border:1px solid #EFF2F8; }
-  .c-img-fallback { color:#596CED; font-size:28px; background:#F1F3F9; display:flex;align-items:center;justify-content:center; }
-  .c-cat { font-size:11px; text-transform:uppercase; letter-spacing:.4px; color:#8F8F8F; font-weight:600; }
-  .c-title { font-size:18px; font-weight:600; color:#191919; margin-top:2px; }
-  .c-sub { font-size:12px; color:#8F8F8F; word-break:break-all; }
+/* ---------- Низ экрана ---------- */
+.bottom { flex:0 0 auto; padding:0 16px 0; background:linear-gradient(180deg, rgba(241,243,249,0) 0%, #F1F3F9 25%); padding-top:14px; }
+.indicator { width:144px; height:5px; background:#000; border-radius:100px; margin:8px auto 8px; }
 
-  /* ---------- Плашки ограничений ---------- */
-  .banners { display:flex; flex-direction:column; gap:8px; margin:14px 0; }
-  .banner { display:flex; align-items:center; gap:10px; padding:10px 12px; border-radius:12px; font-size:13px; font-weight:600; }
-  .banner-icon { font-size:15px; flex:0 0 auto; }
-  .banner.default { background:#FDEBEA; color:#D34037; }
-  .banner.warning { background:#FFF3DF; color:#AD6A00; }
+/* ---------- Bottom sheet ---------- */
+.sheet-overlay { position:absolute; inset:0; background:rgba(10,14,20,.5); opacity:0; pointer-events:none; transition:.25s; z-index:20; }
+.sheet-overlay.show { opacity:1; pointer-events:auto; }
+.sheet { position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:10px 20px 26px; max-height:70%; overflow-y:auto; transform:translateY(100%); transition:.28s; z-index:30; }
+.sheet.show { transform:translateY(0); }
+.sheet-grab { width:42px; height:4px; border-radius:3px; background:#D9DEE6; margin:0 auto 10px; }
+.sheet-close { float:right; border:none; background:#F1F3F9; border-radius:50%; width:30px; height:30px; font-size:14px; cursor:pointer; }
+.sheet .tag { font-size:11px; font-weight:700; color:#596CED; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
+.sheet .s-title { font-size:17px; font-weight:700; margin-bottom:8px; clear:both; color:#191919; }
+.sheet .s-body { font-size:13.5px; color:#4A5563; line-height:1.55; }
+.sheet .s-body ul { padding-left:18px; margin:6px 0; }
+.sheet .s-body li { margin:4px 0; }
+.sheet .s-body .sep { color:#B1BAC6; margin:12px 0; font-weight:700; display:block; }
+.sheet .s-link { margin-top:16px; font-size:13.5px; color:#596CED; }
 
-  /* ---------- Кнопки ---------- */
-  .pill {
-    display:block; width:100%; height:48px; border:none; cursor:pointer;
-    background:#596CED; color:#fff; font-size:16px; font-weight:600; line-height:20px;
-    padding:12px 20px; border-radius:36px;
-  }
-  .pill:hover { background:#4D5FE0; }
+/* ---------- Редактируемые элементы ---------- */
+.ed { outline:none; border-radius:4px; transition:box-shadow .12s, background .12s; }
+.ed:hover { box-shadow:0 0 0 2px rgba(89,108,237,.55); background:rgba(89,108,237,.05); cursor:pointer; }
+.ed.edit { box-shadow:0 0 0 2px #596CED; background:rgba(89,108,237,.08); cursor:text; }
+.ed.hit { box-shadow:0 0 0 2px #d7a35c; background:rgba(215,163,92,.12); }
+.ed.sel { box-shadow:0 0 0 2px #596CED; }
+.ed[data-path] { white-space: pre-wrap; }
+.ed[data-path].ed-html { white-space: normal; }
 
-  /* ---------- Низ экрана ---------- */
-  .bottom { flex:0 0 auto; padding:0 16px 0; background:linear-gradient(180deg, rgba(241,243,249,0) 0%, #F1F3F9 25%); padding-top:14px; }
-  .indicator { width:144px; height:5px; background:#000; border-radius:100px; margin:8px auto 8px; }
-
-  /* ---------- Bottom sheet ---------- */
-  .sheet-overlay { position:absolute; inset:0; background:rgba(10,14,20,.5); opacity:0; pointer-events:none; transition:.25s; z-index:20; }
-  .sheet-overlay.show { opacity:1; pointer-events:auto; }
-  .sheet { position:absolute; left:0; right:0; bottom:0; background:#fff; border-radius:22px 22px 0 0; padding:10px 20px 26px; max-height:70%; overflow-y:auto; transform:translateY(100%); transition:.28s; z-index:30; }
-  .sheet.show { transform:translateY(0); }
-  .sheet-grab { width:42px; height:4px; border-radius:3px; background:#D9DEE6; margin:0 auto 10px; }
-  .sheet-close { float:right; border:none; background:#F1F3F9; border-radius:50%; width:30px; height:30px; font-size:14px; cursor:pointer; }
-  .sheet .tag { font-size:11px; font-weight:700; color:#596CED; text-transform:uppercase; letter-spacing:.4px; margin-bottom:6px; }
-  .sheet .s-title { font-size:17px; font-weight:700; margin-bottom:8px; clear:both; color:#191919; }
-  .sheet .s-body { font-size:13.5px; color:#4A5563; line-height:1.55; }
-  .sheet .s-body ul { padding-left:18px; margin:6px 0; }
-  .sheet .s-body li { margin:4px 0; }
-  .sheet .s-body .sep { color:#B1BAC6; margin:12px 0; font-weight:700; display:block; }
-  .sheet .s-link { margin-top:16px; font-size:13.5px; color:#596CED; }
-
-  @media (max-width: 940px) {
-    .app { flex-direction: column; }
-    .panel { width:100%; max-width:none; min-width:0; border-right:none; border-bottom:1px solid #223042; }
-    textarea { min-height:200px; }
-    .preview { padding:20px 12px; }
-    .phone.tall { height:auto; max-height:none; }
-  }
+@media (max-width: 940px) {
+  .app { flex-direction: column; height: auto; }
+  .panel { width:100%; max-width:none; min-width:0; border-right:none; border-bottom:1px solid #223042; }
+  .cfg-wrap { min-height:200px; }
+  .preview { padding:20px 12px; }
+  .phone.tall { height:auto; max-height:none; }
+}
 </style>
 </head>
 <body>
 <div class="app">
-
   <div class="panel">
     <div class="h">Конфигурация <span class="status" id="status">вставьте JSON</span></div>
-    <textarea id="cfg" spellcheck="false" placeholder='Вставьте сюда конфигурацию (JSON) — полный ответ API или вырезку.&#10;Формат автоматически разложится в столбик.&#10;Или перетащите файл .json'></textarea>
+    <div class="cfg-wrap">
+      <div class="cfg-line-hl" id="cfgLineHl"></div>
+      <textarea id="cfg" spellcheck="false" placeholder='Вставьте сюда конфигурацию (JSON) — полный ответ API или вырезку.&#10;Формат автоматически разложится в столбик.&#10;Или перетащите файл .json'></textarea>
+    </div>
     <div class="row">
       <button class="btn primary" id="applyBtn">Применить</button>
       <button class="btn" id="sampleBtn">Пример</button>
-      <button class="btn" id="fileBtn">Загрузить .json</button>
       <button class="btn" id="clearBtn">Очистить</button>
-      <input type="file" id="fileInput" accept=".json,application/json" style="display:none">
       <label class="chk"><input type="checkbox" id="autoFmt" checked> авто-формат в столбик</label>
       <label class="chk"><input type="checkbox" id="bannerToggle"> плашки ограничений</label>
     </div>
-    <div class="row"><span class="status note" id="hint">Авто-рендер включён: превью обновляется при вставке</span></div>
+    <div class="row"><span class="status note" id="hint">Правка — только двойной клик по тексту. Enter — перенос строки, Tab — выбор следующего поля. Обычный клик — как обычно</span></div>
   </div>
-
   <div class="preview">
     <div style="width:100%; max-width:422px;">
-      <div class="desk-note">Превью экрана «Продукты» (product_info) · стиль по Figma «Эквайринг»</div>
       <div class="phone tall" id="phone">
         <div class="statusbar"><span id="time">9:41</span><span>📶 ⚡ 🔋</span></div>
         <div class="appbar">
@@ -193,7 +209,6 @@
           <span class="abar-r">🔍</span>
         </div>
         <div class="scroll" id="scroll">
-          <div class="js-ok" id="jsOk">✓ Скрипт выполнен успешно</div>
           <div class="js-err" id="jsErr"></div>
           <div class="empty" id="empty">🖼<br><br>Слева вставьте конфигурацию —<br>здесь появится экран</div>
           <div id="cards"></div>
@@ -211,7 +226,6 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
@@ -254,14 +268,145 @@ function wireImages(){
   });
 }
 
+/* ---------- Привязка к JSON (пути ↔ строки) ---------- */
+function stringifyWithMap(root){
+  var lines = [], map = {};
+  function R(n){ var r=''; for (var i=0;i<n;i++) r+='  '; return r; }
+  function push(s){ lines.push(s); return lines.length; }
+  function isObject(v){ return v && typeof v === 'object' && !Array.isArray(v); }
+  function isContainer(v){ return v && typeof v === 'object'; }
+  function walk(node, path, depth){
+    // node is container (object or array) — печатаем тело + закрытие
+    var keys;
+    if (Array.isArray(node)) keys = node.map(function(v,i){ return i; });
+    else keys = Object.keys(node);
+    var has = keys.length > 0;
+    // пустые контейнеры: "{}" или "[]" одной строкой (уже открыты родителем)
+    if (!has) { push('}'); return; }
+    keys.forEach(function(k, i){
+      var val = node[k];
+      var p = path.concat(k);
+      var comma = (i < keys.length - 1) ? ',' : '';
+      var ktext = (typeof k === 'number') ? String(k) : '"' + k + '"';
+      if (isContainer(val)){
+        push(R(depth+1) + ktext + ': ' + (Array.isArray(val) ? '[' : '{'));
+        walk(val, p, depth+1);
+        if (Array.isArray(val) && (!val.length)) { /* уже закрыт */ }
+        else { push(R(depth+1) + (Array.isArray(val) ? ']' : '}') + comma); }
+      } else {
+        push(R(depth+1) + ktext + ': ' + JSON.stringify(val) + comma);
+        map[p.join('.')] = lines.length;
+      }
+    });
+  }
+  // корень
+  if (Array.isArray(root)) { push('['); walk(root, [], 0); push(']'); }
+  else if (root && typeof root === 'object') { push('{'); walk(root, [], 0); push('}'); }
+  else { push(JSON.stringify(root)); }
+  return { text: lines.join('\n'), map: map };
+}
+
+function segToNum(s){ return /^\d+$/.test(s) ? parseInt(s, 10) : s; }
+function getByPath(o, path){
+  var c = o;
+  for (var i=0; i<path.length; i++){
+    c = (c != null && typeof c === 'object') ? c[segToNum(path[i])] : undefined;
+  }
+  return c;
+}
+function setByPath(o, path, value){
+  var c = o;
+  for (var i=0; i<path.length-1; i++){
+    c = (c != null && typeof c === 'object') ? c[segToNum(path[i])] : undefined;
+  }
+  if (c != null && typeof c === 'object') c[segToNum(path[path.length-1])] = value;
+}
+function lineOfPos(pos, text){
+  var n = 0;
+  for (var i=0; i<pos && i<text.length; i++) if (text.charAt(i) === '\n') n++;
+  return n + 1;
+}
+function posOfLine(line, text){
+  var n = 1, i = 0;
+  while (n < line) { if (text.charAt(i) === '\n') n++; i++; }
+  return i;
+}
+function lineHeightOfTextarea(){
+  var cs = getComputedStyle(cfg);
+  var lh = parseFloat(cs.lineHeight) || 18;
+  return lh;
+}
+
+var focusPath = null;
+var hoverPath = null;
+function cfgPadTop(){
+  var cs = getComputedStyle(cfg);
+  return parseFloat(cs.paddingTop) || 0;
+}
+function focusLineFor(pathStr){
+  if (!pathStr) return 0;
+  return libMap[pathStr] || 0;
+}
+function cfgLineTop(line){
+  return cfgPadTop() + (line - 1) * lineHeightOfTextarea();
+}
+function markJsonLine(pathStr){
+  var hl = document.getElementById('cfgLineHl');
+  var line = focusLineFor(pathStr);
+  if (!line) { if (hl) hl.style.display = 'none'; return; }
+  var lh = lineHeightOfTextarea();
+  cfg.scrollTop = Math.max(0, (line - 4) * lh);
+  // подсветить строку через выделение (видно и без фокуса на textarea)
+  if (document.activeElement !== cfg) {
+    var start = posOfLine(line, cfg.value);
+    var end = posOfLine(line + 1, cfg.value) - 1;
+    cfg.setSelectionRange(start, Math.max(start, end));
+  }
+  if (hl) {
+    hl.style.display = 'block';
+    hl.style.top = (cfgLineTop(line) - cfg.scrollTop) + 'px';
+    hl.style.height = lh + 'px';
+  }
+}
+function refreshLineHl(){
+  markJsonLine(hoverPath || focusPath);
+}
+
+var currentRoot = null;
+var lastProducts = null;
+var libMap = {};   // pathStr -> line
+var lineLib = {};  // line -> pathStr
+
+function rebuildLineLib(){
+  lineLib = {};
+  for (var p in libMap) lineLib[libMap[p]] = p;
+}
+function rebuildTextarea(restoreLine){
+  if (!currentRoot) return;
+  var r = stringifyWithMap(currentRoot);
+  libMap = r.map;
+  rebuildLineLib();
+  var hadFocus = document.activeElement === cfg;
+  var selLine = (restoreLine != null) ? restoreLine
+    : (hadFocus ? lineOfPos(cfg.selectionStart, cfg.value) : null);
+  cfg.value = r.text;
+  cfg.scrollTop = 0;
+  if (hadFocus && selLine != null){
+    var pos = posOfLine(selLine, cfg.value);
+    cfg.setSelectionRange(pos, pos);
+    cfg.scrollTop = Math.max(0, (selLine - 4) * lineHeightOfTextarea());
+  }
+  refreshLineHl();
+}
+
 /* ---------- Разбор структуры ---------- */
 function looksLikeProduct(o){
   return o && typeof o === 'object' && !Array.isArray(o) && typeof o.header === 'string';
 }
-function findPage(obj, depth){
+function findPagePath(obj, depth, path){
   if (!obj || typeof obj !== 'object' || depth > 12) return null;
-  if (Array.isArray(obj)) {
-    for (var i=0;i<obj.length;i++){ var r=findPage(obj[i], depth+1); if(r) return r; }
+  if (Array.isArray(obj)){
+    for (var i=0;i<obj.length;i++){ var r=findPagePath(obj[i], depth+1, path.concat(i)); if(r) return r; }
     return null;
   }
   var keys = Object.keys(obj);
@@ -271,9 +416,9 @@ function findPage(obj, depth){
     var v = obj[keys[k]];
     if (v && typeof v === 'object' && Array.isArray(v.directory)) dc++;
   }
-  if (dc > 0 && dc === keys.length) return obj;
+  if (dc > 0 && dc === keys.length) return { node: obj, path: path };
   for (var kk=0;kk<keys.length;kk++){
-    var r2 = findPage(obj[keys[kk]], depth+1);
+    var r2 = findPagePath(obj[keys[kk]], depth+1, path.concat(keys[kk]));
     if (r2) return r2;
   }
   return null;
@@ -288,20 +433,25 @@ function parseLink(lb){
   var isSheet = href === 'bottom-sheet' || !!bs;
   return { href: isSheet ? null : href, label: label, sheet: isSheet ? bs : null };
 }
-function parseProduct(d, cat){
+function parseProduct(d, cat, itemPath, dataPath){
   var link = parseLink(d.link_button);
   var conditions = [];
-  (d.conditions || d.facts || d.features || []).forEach(function(c){
+  (d.conditions || d.facts || d.features || []).forEach(function(c, ci){
     conditions.push({
       icon: c.icon_android || c.icon_ios || c.icon || '',
       text: c.text || '',
-      add: c.additional_text || c.additionalText || c.subtitle || ''
+      add: c.additional_text || c.additionalText || c.subtitle || '',
+      path: dataPath.concat(['conditions', ci])
     });
   });
   var banners = [];
-  (d.banners || []).forEach(function(b){
+  (d.banners || []).forEach(function(b, bi){
     var col = String(b.color || '').toUpperCase();
-    banners.push({ color: col, icon: b.icon_android || b.icon_ios || b.icon || '', text: b.text || '' });
+    banners.push({
+      color: col, icon: b.icon_android || b.icon_ios || b.icon || '',
+      text: b.text || '',
+      path: dataPath.concat(['banners', bi])
+    });
   });
   return {
     name: d.name || '',
@@ -311,31 +461,36 @@ function parseProduct(d, cat){
     action: d.action_button || d.actionText || 'Продолжить',
     link: link,
     banners: banners,
-    conditions: conditions
+    conditions: conditions,
+    itemPath: itemPath,
+    dataPath: dataPath
   };
 }
-function extractSections(rootJson){
+function extractSections(root){
   var out = { products: [], sections: [], pageName: '' };
-  if (!rootJson) return out;
-  if (rootJson.name) out.pageName = rootJson.name;
-  else if (rootJson.data && rootJson.data.name) out.pageName = rootJson.data.name;
-  var page = findPage(rootJson, 0);
-  if (page) {
+  if (!root) return out;
+  if (root.name) out.pageName = root.name;
+  else if (root.data && root.data.name) out.pageName = root.data.name;
+  var pageRes = findPagePath(root, 0, []);
+  if (pageRes) {
+    var page = pageRes.node, pagePath = pageRes.path;
     Object.keys(page).forEach(function(key){
       var group = page[key];
       if (!group || !Array.isArray(group.directory)) return;
       var cat = group.name || key;
       var items = [];
-      group.directory.forEach(function(item){
+      group.directory.forEach(function(item, idx){
         if (!item) return;
+        var itemPath = pagePath.concat([key, 'directory', idx]);
         var d = item.data || item;
-        if (looksLikeProduct(d)) out.products.push(parseProduct(d, cat));
-        else items.push(d);
+        var dataPath = item.data ? itemPath.concat('data') : itemPath;
+        if (looksLikeProduct(d)) out.products.push(parseProduct(d, cat, itemPath, dataPath));
+        else items.push({ d: d, path: dataPath });
       });
       if (items.length) out.sections.push({ key: key, name: group.name || key, items: items });
     });
   }
-  if (out.products.length === 0 && looksLikeProduct(rootJson)) out.products.push(parseProduct(rootJson, ''));
+  if (out.products.length === 0 && looksLikeProduct(root)) out.products.push(parseProduct(root, '', [], []));
   return out;
 }
 
@@ -358,17 +513,37 @@ function heroHtml(p, idx){
   }
   return '<div class="hero hero-icon-only"><div class="hero-icon">' + letter + '</div></div>';
 }
+
+/* ---------- Редактируемые элементы ---------- */
+function ed(tag, attrs, html){
+  // attrs: объект {class, style, path, href, target, data-sheet}
+  var a = '';
+  if (attrs) {
+    if (attrs.class) a += ' class="' + attrs.class + '"';
+    if (attrs.style) a += ' style="' + attrs.style + '"';
+    if (attrs.path) a += ' data-path="' + attrs.path + '"';
+    if (attrs.href) a += ' href="' + attrs.href + '"';
+    if (attrs.target) a += ' target="' + attrs.target + '"';
+    if (attrs.sheet !== undefined) a += ' data-sheet="' + attrs.sheet + '"';
+  }
+  return '<' + tag + a + '>' + html + '</' + tag + '>';
+}
+function edPlain(tag, cls, path, text){
+  return ed(tag, { class: cls, path: path }, esc(text));
+}
+
 function rowsHtml(conditions){
   var out = '';
   (conditions || []).forEach(function (c) {
+    var p = c.path;
     out += '<div class="row">' +
       '<div class="row-icon">' + iconInner(c) + '</div>' +
       '<div class="row-txt">' +
-        '<span class="row-title">' + esc(c.text) + '</span>' +
-        (c.add ? '<span class="row-label">' + esc(c.add) + '</span>' : '') +
+      '<span class="row-title ed" data-path="' + p.concat(['text']).join('.') + '">' + esc(c.text) + '</span>' +
+      (c.add ? '<span class="row-label ed" data-path="' + p.concat(['additional_text']).join('.') + '">' + esc(c.add) + '</span>' : '') +
       '</div>' +
       '<span class="row-chev">›</span>' +
-    '</div>';
+      '</div>';
   });
   return out;
 }
@@ -378,7 +553,8 @@ function bannersHtml(banners){
   banners.forEach(function (b) {
     var cls = b.color === 'DEFAULT' ? 'default' : 'warning';
     var bIcon = b.icon ? iconImg(b.icon, iconFor(b.icon), 'banner-ico') : '<span>•</span>';
-    out += '<div class="banner ' + cls + '"><span class="banner-icon">' + bIcon + '</span>' + esc(b.text) + '</div>';
+    out += '<div class="banner ' + cls + '"><span class="banner-icon">' + bIcon + '</span>' +
+      '<span class="ed" data-path="' + b.path.concat(['text']).join('.') + '">' + esc(b.text) + '</span></div>';
   });
   return out + '</div>';
 }
@@ -391,80 +567,70 @@ var bannerToggleOn = false;
 var phone = document.getElementById('phone');
 var bottom = document.getElementById('bottom');
 var ctaBtn = document.getElementById('ctaBtn');
+var navTitle = document.getElementById('navTitle');
 
 function linkHtml(p, idx){
   if (!p.link) return '';
-  if (p.link.sheet) return '<a class="d-link" href="#" data-sheet="' + idx + '">' + esc(p.link.label) + '</a>';
-  if (p.link.href) return '<a class="d-link" href="' + p.link.href + '" target="_blank">' + esc(p.link.label) + '</a>';
-  if (p.link.label) return '<span class="d-link plain">' + esc(p.link.label) + '</span>';
+  if (p.link.sheet) {
+    return ed('a', { class: 'd-link ed', path: p.dataPath.concat(['link_button','text']).join('.'), sheet: idx }, esc(p.link.label));
+  }
+  if (p.link.href) {
+    return ed('a', { class: 'd-link ed', path: p.dataPath.concat(['link_button','text']).join('.'), href: p.link.href, target: '_blank' }, esc(p.link.label));
+  }
+  if (p.link.label) return '<span class="d-link plain ed" data-path="' + p.dataPath.concat(['link_button','text']).join('.') + '">' + esc(p.link.label) + '</span>';
   return '';
+}
+
+function productCardHtml(p, idx){
+  var letter = (p.header || '?').charAt(0);
+  var thumb = '<div class="c-img c-img-fallback">' + letter + '</div>';
+  if (p.image) thumb = '<img class="c-img" alt="" src="' + svgTile(idx % 5, letter) + '" data-src="' + p.image + '">';
+  var field = function(f){ return p.dataPath.concat([f]).join('.'); };
+  return '<div class="c-card">' +
+    '<div class="c-head">' + thumb +
+    '<div>' +
+    (p.cat && p.cat !== p.header ? '<div class="c-cat ed" data-path="' + field('category') + '">' + esc(p.cat) + '</div>' : '') +
+    '<div class="c-title ed" data-path="' + field('header') + '">' + esc(p.header) + '</div>' +
+    (p.name ? '<div class="c-sub ed" data-path="' + field('name') + '">' + esc(p.name) + '</div>' : '') +
+    '</div>' +
+    '</div>' +
+    rowsHtml(p.conditions) +
+    bannersHtml(p.banners) +
+    ed('button', { class: 'pill ed', path: field('action_button'), style: 'margin-top:14px' }, esc(p.action)) +
+    linkHtml(p, idx) +
+    '</div>';
 }
 
 function render(products, pageName){
   cardsHost.innerHTML = '';
   empty.style.display = products.length ? 'none' : 'block';
-  document.getElementById('navTitle').textContent = pageName || '';
-
+  navTitle.textContent = pageName || '';
   var single = products.length === 1;
   bottom.style.display = single ? '' : 'none';
-  phone.classList.add(single ? 'mode-detail' : 'mode-catalog');
-
+  phone.classList.toggle('mode-detail', single);
+  phone.classList.toggle('mode-catalog', !single);
   products.forEach(function (p, idx) {
     var card = document.createElement('div');
-
     if (single) {
-      /* экран продукта как в Figma: hero → заголовок → info-карточка → ссылка */
+      var field = function(f){ return p.dataPath.concat([f]).join('.'); };
       card.innerHTML =
         heroHtml(p, idx) +
-        '<div class="d-title">' + esc(p.header) + '</div>' +
+        edPlain('div', 'd-title ed', field('header'), p.header) +
         bannersHtml(p.banners) +
         '<div class="d-card">' + rowsHtml(p.conditions) + '</div>' +
         linkHtml(p, idx);
       ctaBtn.textContent = p.action;
+      ctaBtn.setAttribute('data-path', field('action_button'));
+      ctaBtn.className = 'pill ed';
     } else {
-      /* каталог: карточки в дизайн-системе */
       card.innerHTML = productCardHtml(p, idx);
     }
-
     cardsHost.appendChild(card);
   });
-
+  lastProducts = products;
   document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
-
-  document.querySelectorAll('a[data-sheet]').forEach(function (a) {
-    a.addEventListener('click', function (e) {
-      e.preventDefault();
-      var p = products[parseInt(a.getAttribute('data-sheet'), 10)];
-      if (!p || !p.link || !p.link.sheet) return;
-      var html = '<div class="tag">Акция</div><div class="s-body">' + (p.link.sheet.text || '') + '</div>';
-      if (p.link.sheet.link_button) html += '<div class="s-link">' + p.link.sheet.link_button + '</div>';
-      document.getElementById('sheetContent').innerHTML = html;
-      document.getElementById('sheet').classList.add('show');
-      document.getElementById('overlay').classList.add('show');
-    });
-  });
-
   wireImages();
-}
-
-/* ---------- Универсальная авто-вёрстка (для любых структур) ---------- */
-function productCardHtml(p, idx){
-  var letter = (p.header || '?').charAt(0);
-  var thumb = '<div class="c-img">' + letter + '</div>';
-  if (p.image) thumb = '<img class="c-img" alt="" src="' + svgTile(idx % 5, letter) + '" data-src="' + p.image + '">';
-  return '<div class="c-card">' +
-    '<div class="c-head">' + thumb +
-      '<div>' +
-        (p.cat && p.cat !== p.header ? '<div class="c-cat">' + esc(p.cat) + '</div>' : '') +
-        '<div class="c-title">' + esc(p.header) + '</div>' +
-        (p.name ? '<div class="c-sub">' + esc(p.name) + '</div>' : '') +
-      '</div>' +
-    '</div>' +
-    rowsHtml(p.conditions) +
-    bannersHtml(p.banners) +
-    '<button class="pill" style="margin-top:14px">' + esc(p.action) + '</button>' +
-    linkHtml(p, idx) +
-  '</div>';
+  setupEditable();
 }
 
 function classifyItem(d){
@@ -477,42 +643,240 @@ function classifyItem(d){
   if (hasName) return 'choice';
   return 'kv';
 }
-
 function renderSections(sections, pageName){
   cardsHost.innerHTML = '';
   empty.style.display = 'none';
   bottom.style.display = 'none';
-  document.getElementById('navTitle').textContent = pageName || 'Содержимое';
-
+  navTitle.textContent = pageName || 'Содержимое';
   var html = '';
   sections.forEach(function(group){
     var rows = '';
-    group.items.forEach(function(d){
+    group.items.forEach(function(it){
+      var d = it.d, base = it.path;
+      var P = function(f){ return base.concat([f]).join('.'); };
       var t = classifyItem(d);
       if (t === 'link') {
-        rows += '<a class="g-row" href="' + esc(d.link) + '" target="_blank"><span class="g-ico">🔗</span><span class="g-name">' + esc(d.name) + '</span><span class="row-chev">›</span></a>';
+        rows += '<a class="g-row" href="' + esc(d.link) + '" target="_blank"><span class="g-ico">🔗</span><span class="g-name ed" data-path="' + P('name') + '">' + esc(d.name) + '</span><span class="row-chev">›</span></a>';
       } else if (t === 'note') {
-        rows += '<div class="g-note"><div class="g-name">' + esc(d.name) + '</div><div class="g-text">' + esc(d.text) + '</div></div>';
+        rows += '<div class="g-note"><div class="g-name ed" data-path="' + P('name') + '">' + esc(d.name) + '</div><div class="g-text ed" data-path="' + P('text') + '">' + esc(d.text) + '</div></div>';
       } else if (t === 'choice') {
-        rows += '<div class="g-row"><span class="g-dot"></span><span class="g-name">' + esc(d.name) + '</span></div>';
+        rows += '<div class="g-row"><span class="g-dot"></span><span class="g-name ed" data-path="' + P('name') + '">' + esc(d.name) + '</span></div>';
       } else if (t === 'kv') {
         Object.keys(d).forEach(function(k){
           if (k === 'id') return;
           var v = d[k];
           if (v === null || v === undefined || typeof v === 'object') return;
-          rows += '<div class="g-row"><span class="g-key">' + esc(k) + '</span><span class="g-name" style="text-align:right">' + esc(v) + '</span></div>';
+          rows += '<div class="g-row"><span class="g-key">' + esc(k) + '</span><span class="g-name ed" style="text-align:right" data-path="' + P(k) + '">' + esc(v) + '</span></div>';
         });
       } else {
-        rows += '<div class="g-note"><div class="g-name">' + esc(d.name || d.header || '') + '</div></div>';
+        rows += '<div class="g-note"><div class="g-name ed" data-path="' + P('name') + '">' + esc(d.name || d.header || '') + '</div></div>';
       }
     });
     html += '<div class="sec-title">' + esc(group.name || group.key) + '</div><div class="d-card">' + rows + '</div>';
   });
-
   cardsHost.innerHTML = html;
   document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
   wireImages();
+  setupEditable();
 }
+
+/* ---------- Правка (двойной клик) и навигация по JSON ---------- */
+function edText(el){
+  var out = [];
+  function walk(n){
+    if (n.nodeType === 3) { out.push(n.nodeValue); return; }          // text
+    if (n.nodeType === 1) {                                            // element
+      var tag = n.tagName.toLowerCase();
+      if (tag === 'br') { out.push('\n'); return; }
+      var block = /^(p|div|h[1-6]|li|ul|ol|blockquote|pre)$/.test(tag);
+      if (block && out.length) out.push('\n');
+      for (var i = 0; i < n.childNodes.length; i++) walk(n.childNodes[i]);
+      if (block) out.push('\n');
+    }
+  }
+  walk(el);
+  return out.join('')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/\n+$/, '')
+    .trim();
+}
+function onEdInput(el){
+  var pathStr = el.getAttribute('data-path');
+  if (!pathStr || !currentRoot) return;
+  var path = pathStr.split('.');
+  var isHtml = el.classList && el.classList.contains('ed-html');
+  var value = isHtml ? el.innerHTML : edText(el);
+  // если ссылка — пересобрать HTML-обёртку <a href>
+  if (path[path.length-2] === 'link_button') {
+    var lbObj = getByPath(currentRoot, path.slice(0,-2));
+    var oldHref = '';
+    var m = /<a\s+href="([^"]*)"/.exec((lbObj && lbObj.text) || '');
+    if (m) oldHref = m[1];
+    var newHtml = (oldHref === 'bottom-sheet')
+      ? '<a href="bottom-sheet">' + value + '</a>'
+      : '<a href="' + oldHref + '">' + value + '</a>';
+    setByPath(currentRoot, path, newHtml);
+  } else {
+    setByPath(currentRoot, path, value);
+  }
+  rebuildTextarea();
+}
+function clearHits(){
+  document.querySelectorAll('.ed.hit').forEach(function (el) { el.classList.remove('hit'); });
+}
+function onHoverToJson(el){
+  var path = el.getAttribute('data-path');
+  if (!path) return;
+  // наведение всегда подсвечивает ту строку, куда указывает мышь,
+  // не трогая фокус редактирования (focusPath)
+  hoverPath = path;
+  markJsonLine(path);
+  clearHits();
+  el.classList.add('hit');
+}
+function clickToJson(el){
+  var path = el.getAttribute('data-path');
+  if (!path) return;
+  focusPath = path;
+  var line = libMap[path];
+  if (!line) return;
+  var lh = lineHeightOfTextarea();
+  var inPreviewEdit = document.activeElement && document.activeElement !== cfg && document.activeElement.classList && document.activeElement.classList.contains('ed');
+  if (!inPreviewEdit) {
+    var start = posOfLine(line, cfg.value);
+    var end = posOfLine(line + 1, cfg.value) - 1;
+    cfg.focus();
+    cfg.setSelectionRange(start, Math.max(start, end));
+  }
+  markJsonLine(path);
+}
+function enterEdit(el){
+  el.setAttribute('contenteditable', 'true');
+  el.classList.add('edit');
+  el.focus();
+  var range = document.createRange();
+  range.selectNodeContents(el);
+  range.collapse(false);
+  var sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+}
+function nextField(el){
+  var all = Array.prototype.slice.call(document.querySelectorAll('.ed[data-path]'));
+  if (!all.length) return null;
+  var idx = all.indexOf(el);
+  return all[(idx + 1) % all.length];
+}
+function openSheetFor(a){
+  var idx = parseInt(a.getAttribute('data-sheet'), 10);
+  var p = lastProducts ? lastProducts[idx] : null;
+  if (!p || !p.link || !p.link.sheet) return;
+  var base = p.dataPath.concat(['link_button', 'data', 'bottom-sheet']);
+  var html = '<div class="tag">Акция</div>' +
+    '<div class="s-body ed ed-html" data-path="' + base.concat(['text']).join('.') + '">' + (p.link.sheet.text || '') + '</div>';
+  if (p.link.sheet.link_button) html += '<div class="s-link ed ed-html" data-path="' + base.concat(['link_button']).join('.') + '">' + p.link.sheet.link_button + '</div>';
+  document.getElementById('sheetContent').innerHTML = html;
+  document.getElementById('sheet').classList.add('show');
+  document.getElementById('overlay').classList.add('show');
+  setupEditable();
+}
+function clearPicks(){
+  document.querySelectorAll('.ed.sel').forEach(function (el) { el.classList.remove('sel'); });
+}
+function pickField(el){
+  clearPicks();
+  if (el) {
+    el.classList.add('sel');
+    var p = el.getAttribute('data-path');
+    if (p) {
+      focusPath = p;
+      markJsonLine(p);
+    }
+  }
+}
+function setupEditable(){
+  document.querySelectorAll('.ed[data-path]').forEach(function (el) {
+    el.setAttribute('contenteditable', 'false');
+    if (el.dataset.bound) return;
+    el.dataset.bound = '1';
+    // действие кнопки/ссылки по одиночному клику откладывается,
+    // чтобы двойной клик успел отменить его и открыть правку
+    var actTimer = null;
+    var action = null;
+    if (el.tagName === 'A') {
+      if (el.getAttribute('data-sheet') !== null) action = function () { openSheetFor(el); };
+      else if (el.getAttribute('href')) action = function () { window.open(el.getAttribute('href'), '_blank'); };
+    }
+    el.addEventListener('click', function (e) {
+      clickToJson(el);
+      if (el.getAttribute('contenteditable') === 'true') { e.preventDefault(); return; }
+      e.preventDefault();
+      if (action) {
+        if (actTimer) clearTimeout(actTimer);
+        actTimer = setTimeout(function () {
+          actTimer = null;
+          action();
+        }, 280);
+      }
+    });
+    el.addEventListener('dblclick', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (actTimer) { clearTimeout(actTimer); actTimer = null; }
+      var p = el.getAttribute('data-path');
+      if (p) {
+        focusPath = p;
+        markJsonLine(p);
+      }
+      enterEdit(el);
+    });
+    el.addEventListener('input', function () { onEdInput(el); });
+    el.addEventListener('blur', function () {
+      el.contentEditable = 'false';
+      el.classList.remove('edit');
+      onEdInput(el);
+      clearHits();
+    });
+    el.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') {
+        // Enter — перенос строки внутри текущего значения (действие по умолчанию)
+        return;
+      }
+      if (e.key === 'Tab') {
+        e.preventDefault();
+        onEdInput(el);
+        el.blur();
+        var next = nextField(el);
+        if (next) pickField(next);
+      }
+    });
+  });
+}
+/* Выход из режима правки кликом мимо редактируемого поля */
+document.addEventListener('mousedown', function (e) {
+  var ed = document.activeElement;
+  if (ed && ed.classList && ed.classList.contains('ed') && ed.getAttribute('contenteditable') === 'true') {
+    if (!ed.contains(e.target)) ed.blur();
+  }
+}, true);
+/* Наведение: подсветка строки JSON под курсором (поверх фокуса).
+   Работает по делегированию — подходит и для полей, добавленных позже (bottom sheet). */
+document.addEventListener('mouseover', function (e) {
+  var t = e.target;
+  if (!t || !t.closest) return;
+  var ed = t.closest('.ed[data-path]');
+  if (ed) {
+    onHoverToJson(ed);
+  } else if (!t.closest('.preview')) {
+    // курсор ушёл с зоны превью — возвращаем подсветку строки фокуса
+    if (hoverPath) {
+      hoverPath = null;
+      clearHits();
+      refreshLineHl();
+    }
+  }
+});
 
 /* ---------- Форматирование JSON в столбик ---------- */
 function tryPretty(text){
@@ -521,21 +885,22 @@ function tryPretty(text){
   try { var o = JSON.parse(t); return JSON.stringify(o, null, 2); }
   catch (e) { return text; }
 }
-function setPrettyPreserving(text){
+function setPrettyPreserving(){
   cfg.value = tryPretty(cfg.value);
 }
 
 /* ---------- Применение конфигурации ---------- */
 function report(msg, cls){ var s = document.getElementById('status'); s.className = 'status ' + (cls || ''); s.textContent = msg; }
-
-function applyConfig(text){
+function applyConfig(text, opts){
+  opts = opts || {};
   var trimmed = (text || '').trim();
-  if (!trimmed) { render([], ''); report('вставьте JSON', ''); return; }
+  if (!trimmed) { currentRoot = null; libMap = {}; rebuildLineLib(); render([], ''); report('вставьте JSON', ''); return; }
   var obj = null;
   try { obj = JSON.parse(trimmed); }
-  catch (err) { render([], ''); report('⚠ JSON не валиден: ' + err.message, 'bad'); return; }
-  var data = obj.data || obj;
-  var res = extractSections(data);
+  catch (err) { currentRoot = null; render([], ''); report('⚠ JSON не валиден: ' + err.message, 'bad'); return; }
+  currentRoot = obj;
+  var res = extractSections(obj);
+  if (!opts.noRebuild) rebuildTextarea();
   if (res.products.length) {
     var n = res.products.length;
     report('Найдено продуктов: ' + n + (n === 1 ? ' · режим «экрана продукта»' : ' · режим «каталога»') + (res.pageName ? ' · имя: ' + res.pageName : ''), 'ok');
@@ -559,7 +924,7 @@ cfg.addEventListener('input', function () {
       var pr = tryPretty(cfg.value);
       if (pr !== cfg.value) { cfg.value = pr; }
     }
-    applyConfig(cfg.value);
+    applyConfig(cfg.value, { noRebuild: true });
   }, 400);
 });
 document.getElementById('applyBtn').addEventListener('click', function () {
@@ -567,48 +932,49 @@ document.getElementById('applyBtn').addEventListener('click', function () {
   applyConfig(cfg.value);
 });
 document.getElementById('clearBtn').addEventListener('click', function () { cfg.value = ''; applyConfig(''); });
-
-var fileInput = document.getElementById('fileInput');
-document.getElementById('fileBtn').addEventListener('click', function () { fileInput.click(); });
-fileInput.addEventListener('change', function () {
-  var f = fileInput.files && fileInput.files[0];
-  if (!f) return;
-  var reader = new FileReader();
-  reader.onload = function () {
-    cfg.value = tryPretty(reader.result);
-    applyConfig(cfg.value);
-    report('Файл загружен: ' + f.name, 'ok');
-  };
-  reader.readAsText(f, 'utf-8');
-  fileInput.value = '';
-});
 ['dragover','drop'].forEach(function (ev) { cfg.addEventListener(ev, function (e) { e.preventDefault(); }); });
 cfg.addEventListener('drop', function (e) {
   var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
   if (!f) return;
   var reader = new FileReader();
-  reader.onload = function () {
-    cfg.value = tryPretty(reader.result);
-    applyConfig(cfg.value);
-    report('Файл загружен: ' + f.name, 'ok');
-  };
+  reader.onload = function () { cfg.value = tryPretty(reader.result); applyConfig(cfg.value); report('Файл загружен: ' + f.name, 'ok'); };
   reader.readAsText(f, 'utf-8');
 });
-
 var bannerToggle = document.getElementById('bannerToggle');
 bannerToggle.addEventListener('change', function () {
   bannerToggleOn = bannerToggle.checked;
   document.querySelectorAll('[data-banners]').forEach(function (el) { el.style.display = bannerToggleOn ? '' : 'none'; });
 });
-
 document.getElementById('overlay').addEventListener('click', closeSheet);
 document.getElementById('sheetClose').addEventListener('click', closeSheet);
 function closeSheet(){ document.getElementById('sheet').classList.remove('show'); document.getElementById('overlay').classList.remove('show'); }
-
 ctaBtn.addEventListener('click', function () { /* CTA — заглушка */ });
-
 document.getElementById('time').textContent = new Date().toLocaleTimeString('ru-RU', { hour:'2-digit', minute:'2-digit' });
-document.getElementById('jsOk').style.display = 'block';
+
+/* Навигация строкой в textarea → подсветка элемента на превью */
+cfg.addEventListener('scroll', function () {
+  var hl = document.getElementById('cfgLineHl');
+  if (!hl) return;
+  var line = focusLineFor(hoverPath || focusPath);
+  if (!line) { hl.style.display = 'none'; return; }
+  hl.style.top = (cfgLineTop(line) - cfg.scrollTop) + 'px';
+});
+cfg.addEventListener('mousemove', function (e) {
+  if (document.activeElement !== cfg) return;
+  var cs = getComputedStyle(cfg);
+  var lh = parseFloat(cs.lineHeight) || 18;
+  var pt = parseFloat(cs.paddingTop) || 0;
+  var rect = cfg.getBoundingClientRect();
+  var y = e.clientY - rect.top - pt + cfg.scrollTop;
+  var line = Math.floor(y / lh) + 1;
+  var pathStr = lineLib[line];
+  clearHits();
+  if (pathStr) {
+    var el = document.querySelector('.ed[data-path="' + CSS.escape(pathStr) + '"]');
+    if (el) el.classList.add('hit');
+  }
+});
+cfg.addEventListener('mouseleave', function () { clearHits(); });
 
 /* ---------- Пример (реальный API-конфиг) ---------- */
 function toApiJson(products){
@@ -625,12 +991,12 @@ function toApiJson(products){
       header: p.header,
       link_button: null,
       product_image: p.image,
-      banners: p.banners.map(function(b){ return { color:b.color, id:b.id, text:b.text, icon_android:'https://storage.sovcombank.ru/mpb/product_info/icons_android/'+b.icon+'.svg', icon_ios:'https://storage.sovcombank.ru/mpb/product_info/icons_ios/'+b.icon+'.png' }; })
+      banners: p.banners.map(function(b){ return { color:b.color, id: (b.id||''), text:b.text, icon_android:'https://storage.sovcombank.ru/mpb/product_info/icons_android/'+b.icon+'.svg', icon_ios:'https://storage.sovcombank.ru/mpb/product_info/icons_ios/'+b.icon+'.png' }; })
     };
     if (p.link.sheet) {
       d.link_button = { text:'<a href="bottom-sheet">'+p.link.label+'</a>', data:{ 'bottom-sheet': { link_button: p.link.sheet.link_button, text: p.link.sheet.text } } };
     } else {
-      d.link_button = { text:'<a href="'+p.link.url+'">'+p.link.label+'</a>', data:null };
+      d.link_button = { text:'<a href="'+ (p.link.url||'') +'">'+p.link.label+'</a>', data:null };
     }
     inner[p.name] = { directory:[ { data:d, name:p.name } ], name:p.cat };
   });
